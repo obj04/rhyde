@@ -8,8 +8,6 @@
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 
-#define RGB(r,g,b) b|(g<<8)|(r<<16)
-
 class Framebuffer {
 	int fbfd = 0;
 	struct fb_var_screeninfo vinfo;

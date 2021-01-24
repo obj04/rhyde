@@ -1,3 +1,8 @@
+#ifndef CANVAS
+#define CANVAS
+
+#include "PSFFont.hpp"
+
 class Canvas {
 	public:
 	int width;
@@ -74,3 +79,5 @@ class Canvas {
 		}
 	}
 };
+
+#endif

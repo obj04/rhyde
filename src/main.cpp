@@ -5,9 +5,15 @@
 #include <sys/file.h>
 #include <sys/ioctl.h>
 #include <sys/mount.h>
+
+#include "PSFFont.hpp"
+PSFFont* font;
+PSFFont* largeFont;
+
 #include "time.hpp"
 #include "io.hpp"
 #include "DisplayManager.hpp"
+#include "Window.hpp"
 
 
 // square ☃
@@ -17,10 +23,6 @@
 // ┘┐┌└│─
 DisplayManager* dm;
 int width, height;
-PSFFont* font;
-PSFFont* largeFont;
-
-
 
 void background(DisplayManager* dm, int alpha) {
 	for(int y = 0; y < height; y++) {
@@ -69,7 +71,7 @@ int main(int argc, char *argv[]) {
 	printf("done. showing splash screen\n");
 
 	background(dm, 255);
-	dm->layers[2] = new NestableCanvas(600, 400);
+	dm->layers[2] = new GraphicsComponent(600, 400);
 	dm->layers[2]->xPos = (width - dm->layers[2]->width) / 2;
 	dm->layers[2]->yPos = (height - dm->layers[2]->height) / 2;
 	for(int i = 0; i < 1000; i++) {
@@ -79,23 +81,13 @@ int main(int argc, char *argv[]) {
 		usleep(1000);
 	}
 
-	dm->layers[3] = new NestableCanvas(600, 400);
+	dm->layers[3] = new GraphicsComponent(600, 400);
 	dm->layers[3]->xPos = (width - dm->layers[3]->width) / 2;
 	dm->layers[3]->yPos = (height - dm->layers[3]->height) / 2;
 	dm->layers[3]->text(8, 8, largeFont, "some kind of test window", 0xff000000);
 	dm->layers[3]->text(8, 72, font, "(This is just a rounded rectangle)", 0xff000000);
 
+	dm->layers[4] = new Window("test window");
 	end();
 	return 0;
-
-	while(true) {
-		char key[8];
-		waitKey(key);
-		if(strcmp(key, ARROW_UP) == 0)
-			printf("\033[Aup\n");
-		//sleep(10);
-	}
-
-	return 0;
-	end();
 }

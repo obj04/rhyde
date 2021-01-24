@@ -1,19 +1,24 @@
+#ifndef GRAPHICSCOMPONENT
+#define GRAPHICSCOMPONENT
+
 #include <cstdio>
 #include <cmath>
 #include <sys/stat.h>
-#include "PSFFont.hpp"
 #include "Canvas.hpp"
+#include "MouseEvent.hpp"
 
-class NestableCanvas: public Canvas {
+#define RGB(r,g,b) b|(g<<8)|(r<<16)
+
+class GraphicsComponent: public Canvas {
 	public:
 	int xPos;
 	int yPos;
 	int zPos;
-	NestableCanvas* layers[16];
+	GraphicsComponent* layers[16];
 
-	NestableCanvas(int w, int h): NestableCanvas(0, 0, w, h) {};
+	GraphicsComponent(int w, int h): GraphicsComponent(0, 0, w, h) {};
 	
-	NestableCanvas(int x, int y, int w, int h): Canvas(w, h) {
+	GraphicsComponent(int x, int y, int w, int h): Canvas(w, h) {
 		xPos = x;
 		yPos = y;
 		width = w;
@@ -24,6 +29,30 @@ class NestableCanvas: public Canvas {
 		}
 	}
 	
+	void onClick(int x, int y) {
+		for(GraphicsComponent* layer : layers) {
+			if(layer != NULL) {
+				if(    x >= layer->xPos
+					&& x <= layer->xPos + layer->width
+					&& y >= layer->yPos
+					&& y <= layer->yPos + layer->height)
+					layer->onClick(x - layer->xPos, y - layer->yPos);
+			}
+		}
+	}
+
+	void onDrag(MouseEvent* e) {
+		for(GraphicsComponent* layer : layers) {
+			if(layer != NULL) {
+				if(    e->xPos >= layer->xPos
+					&& e->xPos <= layer->xPos + layer->width
+					&& e->yPos >= layer->yPos
+					&& e->yPos <= layer->yPos + layer->height)
+					layer->onClick(e->xPos - layer->xPos, e->yPos - layer->yPos);
+			}
+		}
+	}
+
 	void render() {
 		bool toDo[16];
 		for(int i = 0; i < 16; i++) {
@@ -62,9 +91,11 @@ class NestableCanvas: public Canvas {
 					r = (((color >> 16) % 256) * (255 - a) + ((layerColor >> 16) % 256) * a) / 255;
 					g = (((color >> 8) % 256) * (255 - a) + ((layerColor >> 8) % 256) * a) / 255;
 					b = ((color % 256) * (255 - a) + (layerColor % 256) * a) / 255;
-					bitmap[pixelY][pixelX] = RGB(r, g, b);
+					bitmap[pixelY][pixelX] =  a << 24 | RGB(r, g, b);
 				}
 			}
 		}
 	}
 };
+
+#endif

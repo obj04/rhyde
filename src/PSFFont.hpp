@@ -1,3 +1,6 @@
+#ifndef PSFFONT
+#define PSFFONT
+
 #include <assert.h>
 #include <err.h>
 #include <fcntl.h>
@@ -72,3 +75,5 @@ class PSFFont {
 		return bitmap;
 	}
 };
+
+#endif

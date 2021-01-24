@@ -1,7 +1,9 @@
-#include "thread.hpp"
+#include "Thread.hpp"
 #include "time.hpp"
 #include "Framebuffer.hpp"
-#include "NestableCanvas.hpp"
+#include "GraphicsComponent.hpp"
+#include "Window.hpp"
+#include "MouseEvent.hpp"
 
 class DisplayManager {
 	private:
@@ -10,13 +12,13 @@ class DisplayManager {
 	bool stopRequested = false;
 
 	public:
-	NestableCanvas* layers[64];
+	GraphicsComponent* layers[64];
 	Framebuffer* fb;
 
 	DisplayManager() {
 		fb = new Framebuffer();
-		layers[0] = new NestableCanvas(fb->width, fb->height);
-		layers[15] = new NestableCanvas(960, 640, 32, 32);
+		layers[0] = new GraphicsComponent(fb->width, fb->height);
+		layers[15] = new GraphicsComponent(960, 640, 32, 32);
 
 		autoRefresh = new Thread([](void* args) -> void* {
 			DisplayManager* dm = (DisplayManager*) args;
@@ -46,14 +48,32 @@ class DisplayManager {
 
 			while(!dm->interrupted()) {
 				if(read(mouse, data, sizeof(data)) > 0) {
-					left = data[0] & 0x01;
-					right = data[0] & 0x02;
-					middle = data[0] & 0x04;
-					x = data[1];
-					y = data[2];
+					MouseEvent* e = new MouseEvent(
+						dm->layers[15]->xPos, dm->layers[15]->yPos,
+						data[1], data[2], 
+						data[0] & 0x01, data[0] & 0x04, data[0] & 0x02);
+					//printf("mouseevent created %d %d %d %d %d\n", e->xDiff, e->yDiff, e->left, e->middle, e->right);
+					dm->layers[15]->xPos += e->xDiff;
+					dm->layers[15]->yPos += e->yDiff;
 
-					dm->layers[15]->xPos += x;
-					dm->layers[15]->yPos -= y;
+					Window* layer;
+					for(int i = 1; i < 16; i++) {
+						layer = (Window*) dm->layers[i];
+						if(layer != NULL) {
+							if(    e->xPos >= layer->xPos
+								&& e->xPos <= layer->xPos + layer->width
+								&& e->yPos >= layer->yPos
+								&& e->yPos <= layer->yPos + layer->height) {
+								if(e->left == 1) {
+									if(e->xDiff == 0 && e->yDiff == 0)
+										layer->onClick(e->xPos, e->yPos);
+									if(e->xDiff != 0 || e->yDiff != 0) {
+										layer->onDrag(e);
+									}
+								}
+							}
+						}
+					}
 				}
 			}
 			close(mouse);
