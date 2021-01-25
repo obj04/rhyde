@@ -3,9 +3,11 @@
 
 #include <cstdio>
 #include <cmath>
+#include <vector>
+using namespace std;
 #include <sys/stat.h>
 #include "Canvas.hpp"
-#include "MouseEvent.hpp"
+#include "Event.hpp"
 
 #define RGB(r,g,b) b|(g<<8)|(r<<16)
 
@@ -15,6 +17,7 @@ class GraphicsComponent: public Canvas {
 	int yPos;
 	int zPos;
 	GraphicsComponent* layers[16];
+	vector<void (*)(void*, Event*)>* listeners;
 
 	GraphicsComponent(int w, int h): GraphicsComponent(0, 0, w, h) {};
 	
@@ -27,29 +30,26 @@ class GraphicsComponent: public Canvas {
 		for(int i = 0; i < height; i++) {
 			bitmap[i] = new int[width];
 		}
+
+		listeners = new vector<void (*)(void*, Event*)>(4);
+		listeners->push_back([](void* source, Event* e) -> void {
+			GraphicsComponent* comp = (GraphicsComponent*) source;
+			for(GraphicsComponent* layer : comp->layers) {
+				if(layer != NULL) {
+					if(    e->xPos >= layer->xPos
+						&& e->xPos <= layer->xPos + layer->width
+						&& e->yPos >= layer->yPos
+						&& e->yPos <= layer->yPos + layer->height);
+						layer->onEvent(e);
+				}
+			}
+		});
 	}
 	
-	void onClick(int x, int y) {
-		for(GraphicsComponent* layer : layers) {
-			if(layer != NULL) {
-				if(    x >= layer->xPos
-					&& x <= layer->xPos + layer->width
-					&& y >= layer->yPos
-					&& y <= layer->yPos + layer->height)
-					layer->onClick(x - layer->xPos, y - layer->yPos);
-			}
-		}
-	}
-
-	void onDrag(MouseEvent* e) {
-		for(GraphicsComponent* layer : layers) {
-			if(layer != NULL) {
-				if(    e->xPos >= layer->xPos
-					&& e->xPos <= layer->xPos + layer->width
-					&& e->yPos >= layer->yPos
-					&& e->yPos <= layer->yPos + layer->height)
-					layer->onClick(e->xPos - layer->xPos, e->yPos - layer->yPos);
-			}
+	void onEvent(Event* e) {
+		for(void (*listener)(void*, Event*) : *listeners) {
+			if(listener != NULL)
+				listener(this, e);
 		}
 	}
 
