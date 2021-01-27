@@ -6,8 +6,9 @@
 #include <vector>
 using namespace std;
 #include <sys/stat.h>
-#include "Canvas.hpp"
-#include "Event.hpp"
+#include <ui/Canvas.hpp>
+#include <event/MouseEvent.hpp>
+#include <event/MouseListener.hpp>
 
 #define RGB(r,g,b) b|(g<<8)|(r<<16)
 
@@ -17,7 +18,7 @@ class GraphicsComponent: public Canvas {
 	int yPos;
 	int zPos;
 	GraphicsComponent* layers[16];
-	vector<void (*)(void*, Event*)>* listeners;
+	MouseListener* mouseListener;
 
 	GraphicsComponent(int w, int h): GraphicsComponent(0, 0, w, h) {};
 	
@@ -31,26 +32,25 @@ class GraphicsComponent: public Canvas {
 			bitmap[i] = new int[width];
 		}
 
-		listeners = new vector<void (*)(void*, Event*)>(4);
-		listeners->push_back([](void* source, Event* e) -> void {
+		mouseListener = new MouseListener(this);
+		mouseListener->handlers[MouseEvent::Type::MOUSEDOWN] = [](void* source, MouseEvent* e) -> void {
 			GraphicsComponent* comp = (GraphicsComponent*) source;
 			for(GraphicsComponent* layer : comp->layers) {
 				if(layer != NULL) {
 					if(    e->xPos >= layer->xPos
 						&& e->xPos <= layer->xPos + layer->width
 						&& e->yPos >= layer->yPos
-						&& e->yPos <= layer->yPos + layer->height);
-						layer->onEvent(e);
+						&& e->yPos <= layer->yPos + layer->height) {
+						layer->onMouseEvent(e);
+					}
 				}
 			}
-		});
+		};
 	}
 	
-	void onEvent(Event* e) {
-		for(void (*listener)(void*, Event*) : *listeners) {
-			if(listener != NULL)
-				listener(this, e);
-		}
+	void onMouseEvent(MouseEvent* e) {
+		if(mouseListener != NULL)
+			mouseListener->onEvent(e);
 	}
 
 	void render() {

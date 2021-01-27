@@ -1,9 +1,9 @@
 #include "Thread.hpp"
 #include "time.hpp"
 #include "Framebuffer.hpp"
-#include "GraphicsComponent.hpp"
-#include "Window.hpp"
-#include "Event.hpp"
+#include "ui/components/GraphicsComponent.hpp"
+#include "ui/components/Window.hpp"
+#include "event/MouseEvent.hpp"
 
 class DisplayManager {
 	private:
@@ -38,8 +38,6 @@ class DisplayManager {
 		autoRefresh->start();
 
 		mouseListener = new Thread([](void* args) -> void* {
-//			int frame = 0;
-//			long t = currentTime::millis();
 			DisplayManager* dm = (DisplayManager*) args;
 			int mouse = open("/dev/input/mice", O_RDWR);
 			unsigned char data[3];
@@ -48,7 +46,7 @@ class DisplayManager {
 
 			while(!dm->interrupted()) {
 				if(read(mouse, data, sizeof(data)) > 0) {
-					Event* e = new Event(
+					MouseEvent* e = new MouseEvent(
 						dm->layers[15]->xPos, dm->layers[15]->yPos,
 						data[1], data[2], 
 						data[0] & 0x01, data[0] & 0x04, data[0] & 0x02);
@@ -63,11 +61,12 @@ class DisplayManager {
 								&& e->xPos <= layer->xPos + layer->width
 								&& e->yPos >= layer->yPos
 								&& e->yPos <= layer->yPos + layer->height) {
-								layer->onEvent(e);
+								layer->onMouseEvent(e);
 							}
 						}
 					}
 				}
+				usleep(10000);
 			}
 			close(mouse);
 			return NULL;

@@ -6,14 +6,14 @@
 #include <sys/ioctl.h>
 #include <sys/mount.h>
 
-#include "PSFFont.hpp"
+#include "ui/PSFFont.hpp"
 PSFFont* font;
 PSFFont* largeFont;
 
 #include "time.hpp"
 #include "io.hpp"
 #include "DisplayManager.hpp"
-#include "Window.hpp"
+#include "ui/components/Window.hpp"
 
 
 // square ☃
@@ -55,8 +55,6 @@ void end() {
 }
 
 int main(int argc, char *argv[]) {
-	//system("mknod /dev/input/mice c 13 63");
-
 	printf("creating display manager. if this causes a segfault, adjust your screen resolution\n");
 	dm = new DisplayManager();
 	dm->layers[15]->line(0, 0, 0, 12, 0xff000000);

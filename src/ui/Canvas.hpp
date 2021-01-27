@@ -1,7 +1,7 @@
 #ifndef CANVAS
 #define CANVAS
 
-#include "PSFFont.hpp"
+#include <ui/PSFFont.hpp>
 
 class Canvas {
 	public:

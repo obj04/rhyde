@@ -1,12 +1,12 @@
-#ifndef EVENT
-#define EVENT
+#ifndef MOUSEEVENT
+#define MOUSEEVENT
 
-class Event {
+class MouseEvent {
 	public:
 	typedef enum {
 		MOUSEDOWN,
+		MOUSEMOVE,
 		MOUSEDRAG,
-		MOUSEMOVE
 	} Type;
 
 	int xPos, yPos;
@@ -14,7 +14,7 @@ class Event {
 	unsigned char left, middle, right = 0;
 	Type type;
 	
-	Event(int x, int y, signed char dx, signed char dy, unsigned char l, unsigned char m, unsigned char r) {
+	MouseEvent(int x, int y, signed char dx, signed char dy, unsigned char l, unsigned char m, unsigned char r) {
 		xPos = x;
 		yPos = y;
 		xDiff = dx;
