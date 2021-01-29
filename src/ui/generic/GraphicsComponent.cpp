@@ -14,31 +14,47 @@ GraphicsComponent::GraphicsComponent(int x, int y, int w, int h): Canvas(w, h) {
 	}
 
 	mouseListener = new MouseListener(this);
-	mouseListener->handlers[MouseEvent::Type::MOUSEDOWN] = [](void* source, MouseEvent* e) -> void {
-		GraphicsComponent* comp = (GraphicsComponent*) source;
-		for(GraphicsComponent* layer : comp->layers) {
-			if(layer != NULL) {
-				if(    e->xPos >= layer->xPos
-					&& e->xPos <= layer->xPos + layer->width
-					&& e->yPos >= layer->yPos
-					&& e->yPos <= layer->yPos + layer->height) {
-					layer->onMouseEvent(e);
-				}
-			}
-		}
-	};
+	mouseListener->handlers[MouseEvent::Type::MOUSEDOWN] = [](void* source, MouseEvent* e) -> void { ((GraphicsComponent*) source)->passEvent(source, e); };
 	renderer = [](GraphicsComponent* comp) -> void {
 		comp->mergeLayers();
 	};
 }
 
-void GraphicsComponent::render() {
-	renderer(this);
+void GraphicsComponent::add(GraphicsComponent* comp, void* layoutInformation) {
+	layers[0] = comp;
 }
 
 void GraphicsComponent::onMouseEvent(MouseEvent* e) {
 	if(mouseListener != NULL)
 		mouseListener->onEvent(e);
+}
+
+void GraphicsComponent::passEvent(void* source, MouseEvent* e) {
+	GraphicsComponent* comp = (GraphicsComponent*) source;
+	for(GraphicsComponent* layer : comp->layers) {
+		if(layer != NULL) {
+			if(layer->contains(e->xPos, e->yPos)) {
+				MouseEvent* evt = new MouseEvent(*e);
+				evt->xPos -= layer->xPos;
+				evt->yPos -= layer->yPos;
+				layer->onMouseEvent(evt);
+			}
+		}
+	}
+}
+
+bool GraphicsComponent::contains(int x, int y) {
+	if(    x >= this->xPos
+		&& x <= this->xPos + this->width
+		&& y >= this->yPos
+		&& y <= this->yPos + this->height) {
+		return true;
+	}
+	return false;
+}
+
+void GraphicsComponent::render() {
+	renderer(this);
 }
 
 void GraphicsComponent::mergeLayers() {

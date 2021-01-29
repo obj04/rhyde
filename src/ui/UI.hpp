@@ -93,8 +93,11 @@ class GraphicsComponent: public Canvas {
 
 	GraphicsComponent(int w, int h);
 	GraphicsComponent(int x, int y, int w, int h);
-	void render();
+	void add(GraphicsComponent* comp, void* layoutInformation = NULL);
 	void onMouseEvent(MouseEvent* e);
+	void passEvent(void* source, MouseEvent* e);
+	bool contains(int x, int y);
+	void render();
 	void mergeLayers();
 };
 

@@ -14,6 +14,7 @@
 #include "rhyde/RhyDE.hpp"
 #include "rhyde/DisplayManager.hpp"
 #include "ui/window/Window.hpp"
+#include "ui/button/Button.hpp"
 
 
 // square ☃
@@ -68,10 +69,19 @@ int main(int argc, char *argv[]) {
 	width = dm->fb->width;
 	height = dm->fb->height;
 	printf("done. showing splash screen\n");
-
 	background(dm, 255);
 	dm->layers[1] = new WindowManager(1920, 1080);
-	dm->layers[1]->layers[0] = new Window("test window", windowTitleFont);
+
+	Window* testWindow = new Window("test window", windowTitleFont);
+	((WindowManager*) dm->layers[1])->addWindow(testWindow);
+	Button* button = new Button("change color", font);
+	button->callback = [](void* src) -> void {
+		Button* button = (Button*) src;
+		button->roundRect(0, 0, button->width, button->height, 4, (button->bitmap[3][3] + 0x420) * 3);
+	};
+	testWindow->getContainer()->add(button);
+	button->xPos = 300;
+	button->yPos = 200;
 	end();
 	return 0;
 }

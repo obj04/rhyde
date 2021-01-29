@@ -26,9 +26,12 @@ class WindowListener {
 class Window: public GraphicsComponent {
 	public:
 	char* title;
+	GraphicsComponent* minimizeButton;
+	GraphicsComponent* maximizeButton;
 	GraphicsComponent* closeButton;
 
 	Window(char* title, PSFFont* font);
+	GraphicsComponent* getContainer();
 	void onWindowEvent(WindowEvent* e);
 };
 

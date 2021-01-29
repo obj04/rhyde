@@ -15,6 +15,7 @@ class WindowManager: public GraphicsComponent {
 	public:
 
 	WindowManager(int w, int h);
+	void addWindow(Window* window);
 	void closeWindow(int index);
 };
 

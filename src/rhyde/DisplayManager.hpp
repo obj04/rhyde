@@ -31,6 +31,7 @@ class DisplayManager {
 					t = currentTime::millis();
 					frame = 0;
 				}*/
+				usleep(1000);
 			}
 			return NULL;
 		}, (void*) this);
