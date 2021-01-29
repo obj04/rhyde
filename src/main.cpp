@@ -3,17 +3,17 @@
 #include <cmath>
 #include <unistd.h>
 #include <sys/file.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include <sys/ioctl.h>
 #include <sys/mount.h>
 
-#include "ui/PSFFont.hpp"
-PSFFont* font;
-PSFFont* largeFont;
-
+#include "ui/UI.hpp"
 #include "time.hpp"
 #include "io.hpp"
-#include "DisplayManager.hpp"
-#include "ui/components/Window.hpp"
+#include "rhyde/RhyDE.hpp"
+#include "rhyde/DisplayManager.hpp"
+#include "ui/window/Window.hpp"
 
 
 // square ☃
@@ -36,6 +36,7 @@ PSFFont* loadFont(int width, int height) {
 	char fontFile[16];
 	snprintf(fontFile, 16, "%dx%d.psfu", width, height);
 	struct stat fileStats;
+	
 	stat(fontFile, &fileStats);
 	int fileSize = fileStats.st_size;
 	unsigned char* psfData = new unsigned char[fileSize];
@@ -62,30 +63,15 @@ int main(int argc, char *argv[]) {
 	dm->layers[15]->line(8, 8, 0, 12, 0xff000000);
 	dm->layers[15]->line(5, 10, 8, 16, 0xff000000);
 	printf("done. creating fonts\n");
-	font = loadFont(8, 16);
-	largeFont = loadFont(16, 32);
+	PSFFont* font = loadFont(8, 16);
+	PSFFont* windowTitleFont = loadFont(16, 32);
 	width = dm->fb->width;
 	height = dm->fb->height;
 	printf("done. showing splash screen\n");
 
 	background(dm, 255);
-	dm->layers[2] = new GraphicsComponent(600, 400);
-	dm->layers[2]->xPos = (width - dm->layers[2]->width) / 2;
-	dm->layers[2]->yPos = (height - dm->layers[2]->height) / 2;
-	for(int i = 0; i < 1000; i++) {
-		dm->layers[2]->roundRect(300 - (i * 300 / 1000), 200 - (i * 200 / 1000),
-														 300 + (i * 300 / 1000), 200 + (i * 200 / 1000),
-														 (200 - (190 * i / 1000)) * i / 1000, 0x80ffffff);
-		usleep(1000);
-	}
-
-	dm->layers[3] = new GraphicsComponent(600, 400);
-	dm->layers[3]->xPos = (width - dm->layers[3]->width) / 2;
-	dm->layers[3]->yPos = (height - dm->layers[3]->height) / 2;
-	dm->layers[3]->text(8, 8, largeFont, "some kind of test window", 0xff000000);
-	dm->layers[3]->text(8, 72, font, "(This is just a rounded rectangle)", 0xff000000);
-
-	dm->layers[4] = new Window("test window");
+	dm->layers[1] = new WindowManager(1920, 1080);
+	dm->layers[1]->layers[0] = new Window("test window", windowTitleFont);
 	end();
 	return 0;
 }

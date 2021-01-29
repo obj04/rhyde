@@ -1,9 +1,8 @@
-#include "Thread.hpp"
-#include "time.hpp"
+#include "../Thread.hpp"
+#include "../time.hpp"
 #include "Framebuffer.hpp"
-#include "ui/components/GraphicsComponent.hpp"
-#include "ui/components/Window.hpp"
-#include "event/MouseEvent.hpp"
+#include "../ui/window/Window.hpp"
+
 
 class DisplayManager {
 	private:
@@ -98,7 +97,7 @@ class DisplayManager {
 						r = (((screenColor >> 16) % 256) * (255 - a) + ((layerColor >> 16) % 256) * a) / 255;
 						g = (((screenColor >> 8) % 256) * (255 - a) + ((layerColor >> 8) % 256) * a) / 255;
 						b = ((screenColor % 256) * (255 - a) + (layerColor % 256) * a) / 255;
-						fb->bitmap[pixelY][pixelX] = RGB(r, g, b);
+						fb->bitmap[pixelY][pixelX] = a << 24 | RGB(r, g, b);
 					}
 				}
 			}

@@ -1,3 +1,6 @@
+#ifndef THREAD_HPP
+#define THREAD_HPP
+
 #include <pthread.h>
 
 
@@ -25,3 +28,5 @@ class Thread {
 		pthread_detach(thread);
 	}
 };
+
+#endif
