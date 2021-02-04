@@ -1,5 +1,8 @@
 run: build
-	sudo ./rhyde
+	sudo ./server.out &
+	sudo ./api.out
 
 build:
-	./build.sh
+	./build.sh server
+	sleep 1
+	./build.sh api

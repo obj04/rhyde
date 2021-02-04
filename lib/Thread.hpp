@@ -1,5 +1,4 @@
-#ifndef THREAD_HPP
-#define THREAD_HPP
+#pragma once
 
 #include <pthread.h>
 
@@ -28,5 +27,3 @@ class Thread {
 		pthread_detach(thread);
 	}
 };
-
-#endif

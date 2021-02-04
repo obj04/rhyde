@@ -1,19 +1,13 @@
-#include "../UI.hpp"
+#include "Graphics.hpp"
 
 
 PSFFont::PSFFont(unsigned char* data) {
 	memcpy(&header, data, sizeof(header));
 	if (header.magic != PSF2Magic) {
-		errx(
-			EX_DATAERR, "invalid header magic %08X",
-			header.magic
-		);
+		printf("invalid header magic %08X", header.magic);
 	}
 	if (header.headerSize != sizeof(PSF2Header)) {
-		errx(
-			EX_DATAERR, "weird header size %d",
-			header.headerSize
-		);
+		printf("weird header size %d", header.headerSize);
 	}
 	
 	glyphs = new unsigned char*[128];

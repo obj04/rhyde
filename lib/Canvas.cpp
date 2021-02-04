@@ -1,13 +1,24 @@
-#include "../UI.hpp"
+#include "Graphics.hpp"
 
 
 Canvas::Canvas(int w, int h) {
 	width = w;
 	height = h;
-	bitmap = new int*[height];
-	for(int i = 0; i < height; i++) {
-		bitmap[i] = new int[width];
-	}
+	bitmap = new int[height * width];
+}
+
+int Canvas::getPixel(int xPos, int yPos) {
+	int pos = yPos * width + xPos;
+	if(pos < 0) return 0;
+	if(pos >= sizeof(bitmap) / 4) return 0;
+	return bitmap[pos];
+}
+
+void Canvas::setPixel(int xPos, int yPos, int color) {
+	int pos = yPos * width + xPos;
+	if(pos < 0) return;
+	if(pos >= sizeof(bitmap) / 4) return;
+	bitmap[pos] = color;
 }
 
 void Canvas::fill(int color) {
@@ -21,10 +32,33 @@ void Canvas::text(int xPos, int yPos, PSFFont* font, const char* str, int fg, in
 		for(int y = 0; y < font->height; y++)
 			for(int x = 0; x < font->width; x++) {
 				if(glyph[y][x])
-					bitmap[yPos + y][xPos + i * font->width + x] = fg;
+					setPixel(yPos + y, xPos + i * font->width + x, fg);
 				else
-					bitmap[yPos + y][xPos + i * font->width + x] = bg;
+					setPixel(yPos + y, xPos + i * font->width + x, bg);
 			}
+	}
+}
+
+void Canvas::assimilate(int xPos, int yPos, int w, int h, int* layer) {
+	int pixelY, pixelX;
+	unsigned int currentColor, layerColor;
+	unsigned char currentAlpha, layerAlpha;
+	unsigned char r, g, b;
+	for(int y = 0; y < h; y++) {
+		for(int x = 0; x < w; x++) {
+			pixelX = xPos + x;
+			pixelY = yPos + y;
+			currentColor = getPixel(pixelY, pixelX);
+			layerColor = layer[y * w + x];
+			currentAlpha = currentColor >> 24 % 256;
+			layerAlpha = layerColor >> 24 % 256;
+			if(layerAlpha == 0)
+				continue;
+			r = (((currentColor >> 16) % 256) * currentAlpha + ((layerColor >> 16) % 256) * layerAlpha) / (layerAlpha + currentAlpha);
+			g = (((currentColor >> 8) % 256) * currentAlpha + ((layerColor >> 8) % 256) * layerAlpha) / (layerAlpha + currentAlpha);
+			b = ((currentColor % 256) * currentAlpha + (layerColor % 256) * layerAlpha) / (layerAlpha + currentAlpha);
+			setPixel(pixelY, pixelX, layerAlpha << 24 | RGB(r, g, b));
+		}
 	}
 }
 
@@ -39,14 +73,14 @@ void Canvas::line(int x1, int y1, int x2, int y2, int color) {
 	for(int i = 0; i < steps; i++) {
 		x += xStep;
 		y += yStep;
-		bitmap[(int) y][(int) x] = color;
+		setPixel((int) y, (int) x, color);
 	}
 }
 
 void Canvas::rect(int left, int top, int right, int bottom, int color) {
 	for(int y = top; y < bottom; y++)
 		for(int x = left; x < right; x++) {
-			bitmap[y][x] = color;
+			setPixel(y, x, color);
 		}
 }
 
@@ -65,7 +99,7 @@ void Canvas::circle(int xPos, int yPos, int radius, int color) {
 		int sliceWidth = (float) radius * sqrt(1. - pow((yPos - y) / (float) radius, 2));
 		//(float) radius * cos(3.14159265 * (y - yPos) / radius) / 2;
 		for(int x = xPos - sliceWidth; x < xPos + sliceWidth; x++) {
-			bitmap[y][x] = color;
+			setPixel(y, x, color);
 		}
 	}
 }
