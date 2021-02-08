@@ -37,13 +37,29 @@ class Client {
 		close(fd);
 	}
 
-	void createWindow(int x, int y, int w, int h) {
+	unsigned int createWindow() {
 		char buffer[256];
-		buffer[0] = (char) ClientRequest::CREATE_WINDOW;
-		printf("before write\n");
+		buffer[0] = (char) Request::WINDOW_CREATE;
 		int n = write(fd, buffer, 1);
-		snprintf(buffer, 255, "%d %d %d %d", x, y, w, h);
-		n = write(fd, buffer, 256);
-		n = read(fd, buffer, 256);
+		n = read(fd, buffer, 255);
+		unsigned int id;
+		sscanf(buffer, "%d", &id);
+		return id;
+	}
+
+	void setWindowAttributes(unsigned int id, unsigned int attrs) {
+		char buffer[256];
+		buffer[0] = (char) Request::WINDOW_SET_ATTRIBUTES;
+		int n = write(fd, buffer, 1);
+		snprintf(buffer, 255, "%d %d", id, attrs);
+		n = write(fd, buffer, 255);
+	}
+
+	void resizeWindow(unsigned int id, int x, int y, int w, int h) {
+		char buffer[256];
+		buffer[0] = (char) Request::WINDOW_RESIZE;
+		int n = write(fd, buffer, 1);
+		snprintf(buffer, 255, "%d %d %d %d %d", id, x, y, w, h);
+		n = write(fd, buffer, 255);
 	}
 };

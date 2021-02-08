@@ -1,23 +1,31 @@
 #include "Graphics.hpp"
 
 
-Canvas::Canvas(int w, int h) {
+Canvas::Canvas(unsigned int w, unsigned int h) {
 	width = w;
 	height = h;
 	bitmap = new int[height * width];
 }
 
-int Canvas::getPixel(int xPos, int yPos) {
-	int pos = yPos * width + xPos;
+void Canvas::resize(unsigned int w, unsigned int h) {
+	int* old = bitmap;
+	bitmap = new int[h * w];
+	delete old;
+	width = w;
+	height = h;
+}
+
+int Canvas::getPixel(int yPos, int xPos) {
+	long long pos = yPos * width + xPos;
 	if(pos < 0) return 0;
-	if(pos >= sizeof(bitmap) / 4) return 0;
+	if(pos >= height * width) return 0;
 	return bitmap[pos];
 }
 
-void Canvas::setPixel(int xPos, int yPos, int color) {
-	int pos = yPos * width + xPos;
+void Canvas::setPixel(int yPos, int xPos, int color) {
+	long long pos = yPos * width + xPos;
 	if(pos < 0) return;
-	if(pos >= sizeof(bitmap) / 4) return;
+	if(pos >= height * width) return;
 	bitmap[pos] = color;
 }
 
@@ -54,6 +62,10 @@ void Canvas::assimilate(int xPos, int yPos, int w, int h, int* layer) {
 			layerAlpha = layerColor >> 24 % 256;
 			if(layerAlpha == 0)
 				continue;
+			if(layerAlpha == 255) {
+				setPixel(pixelY, pixelX, layerColor);
+				continue;
+			}
 			r = (((currentColor >> 16) % 256) * currentAlpha + ((layerColor >> 16) % 256) * layerAlpha) / (layerAlpha + currentAlpha);
 			g = (((currentColor >> 8) % 256) * currentAlpha + ((layerColor >> 8) % 256) * layerAlpha) / (layerAlpha + currentAlpha);
 			b = ((currentColor % 256) * currentAlpha + (layerColor % 256) * layerAlpha) / (layerAlpha + currentAlpha);

@@ -1,9 +1,9 @@
 #include "Graphics.hpp"
 
 
-LayeredCanvas::LayeredCanvas(int w, int h): LayeredCanvas(0, 0, w, h) {};
+LayeredCanvas::LayeredCanvas(unsigned int w, unsigned int h): LayeredCanvas(0, 0, w, h) {};
 
-LayeredCanvas::LayeredCanvas(int x, int y, int w, int h): Canvas(w, h) {
+LayeredCanvas::LayeredCanvas(int x, int y, unsigned int w, unsigned int h): Canvas(w, h) {
 	xPos = x;
 	yPos = y;
 }

@@ -35,12 +35,13 @@ class PSFFont {
 
 class Canvas {
 	public:
-	int width;
-	int height;
+	unsigned int width;
+	unsigned int height;
 	int* bitmap;
 
 	public:
-	Canvas(int w, int h);
+	Canvas(unsigned int w, unsigned int h);
+	void resize(unsigned int w, unsigned int h);
 	int getPixel(int xPos, int yPos);
 	void setPixel(int xPos, int yPos, int color);
 	void fill(int color);
@@ -57,7 +58,7 @@ class LayeredCanvas: public Canvas {
 	int xPos;
 	int yPos;
 
-	LayeredCanvas(int w, int h);
-	LayeredCanvas(int x, int y, int w, int h);
+	LayeredCanvas(unsigned int w, unsigned int h);
+	LayeredCanvas(int x, int y, unsigned int w, unsigned int h);
 	bool contains(int x, int y);
 };

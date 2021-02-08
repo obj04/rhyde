@@ -1,7 +1,13 @@
-enum ClientRequest {
-	CREATE_WINDOW
+enum Request {
+	WINDOW_CREATE,
+	WINDOW_RESIZE,
+	WINDOW_SET_ATTRIBUTES,
+	WINDOW_UPDATE,
+	WINDOW_DESTROY,
 };
 
-enum ServerRequest {
-
+namespace WindowAttributes {
+	const int SHOWN = 1;
+	const int FULLSCREEN = 2;
+	const int WM = 4;
 };

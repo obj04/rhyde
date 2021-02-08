@@ -22,7 +22,7 @@ void getKey(char* s) {
 	FD_ZERO(&set);
 	FD_SET(fileno(stdin), &set);
 	
-	memset(s, '\0', sizeof(s));
+	//memset(s, '\0', sizeof(s));
 	int res;
 	char ch;
 	do {

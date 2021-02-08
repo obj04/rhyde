@@ -1,3 +1,5 @@
+#pragma once
+
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -12,12 +14,20 @@
 #include <netinet/in.h>
 #include <sys/stat.h>
 
-#include "dm/RhyDE.hpp"
 #include "../api/Protocol.hpp"
 #include "../lib/Thread.hpp"
 #include "../lib/Graphics.hpp"
 #include "../lib/MouseEvent.hpp"
 
+
+class Window: public LayeredCanvas {
+	public:
+	char* title;
+	unsigned int id;
+	unsigned int flags;
+
+	Window();
+};
 
 class Framebuffer {
 	int fbfd = 0;
@@ -25,13 +35,12 @@ class Framebuffer {
 	struct fb_fix_screeninfo finfo;
 	long screensize = 0;
 	char* fbp = 0;
-	char* buffer;
 	
 	public:
 	unsigned int& width = vinfo.xres;
 	unsigned int& height = vinfo.yres;
 	unsigned int& bpp = vinfo.bits_per_pixel;
-	int** bitmap;
+	int* bitmap;
 
 	public:
 	Framebuffer();
@@ -41,14 +50,14 @@ class Framebuffer {
 };
 
 class DisplayManager {
-	private:
 	Thread* autoRefresh;
 	Thread* mouseListener;
 	bool stopRequested = false;
 
 	public:
 	Canvas* screen;
-	LayeredCanvas* layers[64];
+	Window* layers[64];
+	LayeredCanvas* mousePointer;
 	Framebuffer* fb;
 
 	DisplayManager();
@@ -56,6 +65,9 @@ class DisplayManager {
 	void refresh();
 	void interrupt();
 	bool interrupted();
+	unsigned int createWindow();
+	Window* getWindow(unsigned int id);
+	void destroyWindow(unsigned int id);
 };
 
 class Server {
@@ -64,29 +76,15 @@ class Server {
 		int fd;
 		struct sockaddr_in address;
 	} Socket;
-	unsigned short port;
+	unsigned int port;
 	int serverSocket;
 	struct sockaddr_in serverAddress;
 	Socket clients[16];
 	DisplayManager* dm;
 
-	Server(unsigned short p);
+	Server(unsigned int p);
 	~Server();
 	void waitForClients();
 	void background(int alpha);
-	void processRequest();
+	void processRequest(unsigned int clientId);
 };
-
-PSFFont* loadFont(int width, int height) {
-	char fontFile[16];
-	snprintf(fontFile, 16, "%dx%d.psfu", width, height);
-	struct stat fileStats;
-	
-	stat(fontFile, &fileStats);
-	int fileSize = fileStats.st_size;
-	unsigned char* psfData = new unsigned char[fileSize];
-	FILE* psf = fopen(fontFile, "r");
-	fread(psfData, fileSize, fileSize, psf);
-	fclose(psf);
-	return new PSFFont(psfData);
-}

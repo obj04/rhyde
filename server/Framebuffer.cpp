@@ -1,4 +1,4 @@
-#include "RhyDE.hpp"
+#include "Server.hpp"
 
 
 Framebuffer::Framebuffer() {
@@ -21,10 +21,7 @@ Framebuffer::Framebuffer() {
 	if((long) fbp == -1) return;
 	printf("The framebuffer device was mapped successfully.\n");
 	
-	buffer = new char[screensize];
-	bitmap = new int*[height];
-	for(int i = 0; i < height; i++)
-		bitmap[i] = (int*) (&buffer[((unsigned long long) i * screensize) / (unsigned long long) height]);
+	bitmap = new int[width * height];
 }
 	
 Framebuffer::~Framebuffer() {
@@ -33,9 +30,9 @@ Framebuffer::~Framebuffer() {
 }
 
 void Framebuffer::flush() {
-	memset(buffer, 0, screensize);
+	memset(bitmap, 0, screensize);
 }
 
 void Framebuffer::update() {
-	memcpy(fbp, buffer, screensize);
+	memcpy(fbp, bitmap, screensize);
 }

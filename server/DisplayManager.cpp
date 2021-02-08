@@ -5,14 +5,20 @@
 
 DisplayManager::DisplayManager() {
 	fb = new Framebuffer();
-	layers[0] = new LayeredCanvas(fb->width, fb->height);
-	layers[15] = new LayeredCanvas(fb->width / 2, fb->height / 2, 32, 32);
-
-	layers[15]->line(0, 0, 0, 12, 0xff000000);
-	layers[15]->line(0, 0, 8, 8, 0xff000000);
-	layers[15]->line(8, 8, 0, 12, 0xff000000);
-	layers[15]->line(5, 10, 8, 16, 0xff000000);
-
+	screen = new Canvas(fb->width, fb->height);
+	screen->bitmap = fb->bitmap;
+	layers[0] = new Window();
+	layers[0]->xPos = 0;
+	layers[0]->yPos = 0;
+	layers[0]->resize(fb->width, fb->height);
+	layers[0]->flags = WindowAttributes::SHOWN;
+	mousePointer = new LayeredCanvas(fb->width / 2, fb->height / 2, 32, 32);
+	int pointerColor = 0xff000000;
+	mousePointer->line(0, 0, 0, 12, pointerColor);
+	mousePointer->line(0, 0, 8, 8, pointerColor);
+	mousePointer->line(8, 8, 0, 12, pointerColor);
+	mousePointer->line(5, 10, 8, 16, pointerColor);
+	
 	autoRefresh = new Thread([](void* args) -> void* {
 		DisplayManager* dm = (DisplayManager*) args;
 		int frame = 0;
@@ -41,11 +47,11 @@ DisplayManager::DisplayManager() {
 		while(!dm->interrupted()) {
 			if(read(mouse, data, sizeof(data)) > 0) {
 				MouseEvent* e = new MouseEvent(
-					dm->layers[15]->xPos, dm->layers[15]->yPos,
+					dm->mousePointer->xPos, dm->mousePointer->yPos,
 					data[1], data[2], 
 					data[0] & 0x01, data[0] & 0x04, data[0] & 0x02);
-				dm->layers[15]->xPos += e->xDiff;
-				dm->layers[15]->yPos += e->yDiff;
+				dm->mousePointer->xPos += e->xDiff;
+				dm->mousePointer->yPos += e->yDiff;
 
 				LayeredCanvas* layer;
 				for(int i = 1; i < 16; i++) {
@@ -55,7 +61,7 @@ DisplayManager::DisplayManager() {
 							&& e->xPos <= layer->xPos + layer->width
 							&& e->yPos >= layer->yPos
 							&& e->yPos <= layer->yPos + layer->height) {
-							printf("layer %d clicked\n", i);
+							printf("layer %d touched\n", i);
 						}
 					}
 				}
@@ -75,12 +81,14 @@ DisplayManager::~DisplayManager() {
 
 void DisplayManager::refresh() {
 	fb->flush();
-	screen->fill(0);
 	for(int z = 0; z < 64; z++) {
 		if(layers[z] != NULL) {
-			screen->assimilate(layers[z]->xPos, layers[z]->yPos, layers[z]->width, layers[z]->height, layers[z]->bitmap);
+			if(layers[z]->flags & WindowAttributes::SHOWN) {
+				screen->assimilate(layers[z]->xPos, layers[z]->yPos, layers[z]->width, layers[z]->height, layers[z]->bitmap);
+			}
 		}
 	}
+	screen->assimilate(mousePointer->xPos, mousePointer->yPos, mousePointer->width, mousePointer->height, mousePointer->bitmap);
 	fb->update();
 }
 
@@ -90,4 +98,24 @@ void DisplayManager::interrupt() {
 
 bool DisplayManager::interrupted() {
 	return stopRequested;
+}
+
+unsigned int DisplayManager::createWindow() {
+	for(int i = 0; i < 64; i++) {
+		if(layers[i] == NULL) {
+			layers[i] = new Window();
+			layers[i]->id = i;
+			return i;
+		}
+	}
+	return -1;
+}
+
+Window* DisplayManager::getWindow(unsigned int id) {
+	return layers[id];
+}
+
+void DisplayManager::destroyWindow(unsigned int id) {
+	delete layers[id];
+	layers[id] = NULL;
 }

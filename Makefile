@@ -1,8 +1,12 @@
-run: build
-	sudo ./server.out &
-	sudo ./api.out
+.PHONY: run build server api
 
-build:
+run: build
+	sudo ./server.out
+
+build: server api
+
+server:
 	./build.sh server
-	sleep 1
+
+api:
 	./build.sh api
