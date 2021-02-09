@@ -9,6 +9,7 @@ Canvas::Canvas(unsigned int w, unsigned int h) {
 
 void Canvas::resize(unsigned int w, unsigned int h) {
 	int* old = bitmap;
+	while(lock);
 	bitmap = new int[h * w];
 	delete old;
 	width = w;

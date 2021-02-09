@@ -38,6 +38,7 @@ class Canvas {
 	unsigned int width;
 	unsigned int height;
 	int* bitmap;
+	bool lock;
 
 	public:
 	Canvas(unsigned int w, unsigned int h);

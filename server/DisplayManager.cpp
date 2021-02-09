@@ -84,12 +84,15 @@ void DisplayManager::refresh() {
 	for(int z = 0; z < 64; z++) {
 		if(layers[z] != NULL) {
 			if(layers[z]->flags & WindowAttributes::SHOWN) {
+				layers[z]->lock = true;
 				screen->assimilate(layers[z]->xPos, layers[z]->yPos, layers[z]->width, layers[z]->height, layers[z]->bitmap);
+				layers[z]->lock = false;
 			}
 		}
 	}
 	screen->assimilate(mousePointer->xPos, mousePointer->yPos, mousePointer->width, mousePointer->height, mousePointer->bitmap);
 	fb->update();
+	usleep(10000);
 }
 
 void DisplayManager::interrupt() {

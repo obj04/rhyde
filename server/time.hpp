@@ -1,5 +1,4 @@
-#ifndef TIME_HPP
-#define TIME_HPP
+#pragma once
 
 #include <chrono>
 #include <ctime>
@@ -36,5 +35,3 @@ namespace currentTime {
 		return localtime(&now)->tm_hour;
 	}
 }
-
-#endif
