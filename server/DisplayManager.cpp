@@ -84,9 +84,9 @@ void DisplayManager::refresh() {
 	for(int z = 0; z < 64; z++) {
 		if(layers[z] != NULL) {
 			if(layers[z]->flags & WindowAttributes::SHOWN) {
-				layers[z]->lock = true;
+				layers[z]->lock->acquire();
 				screen->assimilate(layers[z]->xPos, layers[z]->yPos, layers[z]->width, layers[z]->height, layers[z]->bitmap);
-				layers[z]->lock = false;
+				layers[z]->lock->release();
 			}
 		}
 	}

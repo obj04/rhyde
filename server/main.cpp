@@ -31,7 +31,7 @@ int main(int argc, char *argv[]) {
 	server->waitForClients();
 	while(true) {//!escape()) {
 		server->processRequest(0);
-		usleep(100000);
+		//usleep(100000);
 	}
 	return 0;
 }

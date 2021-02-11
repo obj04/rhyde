@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <cmath>
+#include "Lock.hpp"
 
 #define RGB(r,g,b) b|(g<<8)|(r<<16)
 
@@ -38,7 +39,7 @@ class Canvas {
 	unsigned int width;
 	unsigned int height;
 	int* bitmap;
-	bool lock;
+	Lock* lock;
 
 	public:
 	Canvas(unsigned int w, unsigned int h);

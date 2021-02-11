@@ -2,6 +2,7 @@
 
 
 Canvas::Canvas(unsigned int w, unsigned int h) {
+	lock = new Lock();
 	width = w;
 	height = h;
 	bitmap = new int[height * width];
@@ -9,11 +10,12 @@ Canvas::Canvas(unsigned int w, unsigned int h) {
 
 void Canvas::resize(unsigned int w, unsigned int h) {
 	int* old = bitmap;
-	while(lock);
+	lock->acquire();
 	bitmap = new int[h * w];
 	delete old;
 	width = w;
 	height = h;
+	lock->release();
 }
 
 int Canvas::getPixel(int yPos, int xPos) {
@@ -57,10 +59,10 @@ void Canvas::assimilate(int xPos, int yPos, int w, int h, int* layer) {
 		for(int x = 0; x < w; x++) {
 			pixelX = xPos + x;
 			pixelY = yPos + y;
-			currentColor = getPixel(pixelY, pixelX);
 			layerColor = layer[y * w + x];
-			currentAlpha = currentColor >> 24 % 256;
+			currentColor = getPixel(pixelY, pixelX);
 			layerAlpha = layerColor >> 24 % 256;
+			currentAlpha = 255 - layerAlpha; //currentColor >> 24 % 256;
 			if(layerAlpha == 0)
 				continue;
 			if(layerAlpha == 255) {

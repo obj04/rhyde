@@ -37,6 +37,7 @@ void Server::background(int alpha) {
 void Server::processRequest(unsigned int clientId) {
 	char buffer[256];
 	Socket client = clients[clientId];
+	bzero(buffer, 256);
 	int n = read(client.fd, buffer, 1);
 	if(n < 0) // error
 		return;
@@ -45,23 +46,40 @@ void Server::processRequest(unsigned int clientId) {
 	Window* win;
 	switch(buffer[0]) {
 		case Request::WINDOW_CREATE:
-			printf("window create\n");
 			snprintf(buffer, 255, "%d", dm->createWindow());
 			write(client.fd, buffer, 255);
 			break;
-		case Request::WINDOW_RESIZE: 
+		case Request::WINDOW_REPOSITION: 
 			n = read(client.fd, buffer, 255);
-			sscanf(buffer, "%d %d %d %d %d", &id, &x, &y, &w, &h);
+			sscanf(buffer, "%d %d %d", &id, &x, &y);
 			win = dm->getWindow(id);
 			win->xPos = x;
 			win->yPos = y;
+			break;
+		case Request::WINDOW_RESIZE: 
+			n = read(client.fd, buffer, 255);
+			sscanf(buffer, "%d %d %d", &id, &w, &h);
+			win = dm->getWindow(id);
 			win->resize(w, h);
-			win->fill(0x80ffffff); // just for debugging
 			break;
 		case Request::WINDOW_SET_ATTRIBUTES:
 			n = read(client.fd, buffer, 255);
 			sscanf(buffer, "%d %d", &id, &attrs);
 			dm->getWindow(id)->flags = attrs;
+			break;
+		case Request::WINDOW_UPDATE:
+			n = read(client.fd, buffer, 255);
+			sscanf(buffer, "%d", &id);
+			win = dm->getWindow(id);
+			//dm->screen->lock->acquire();
+			//win->lock->acquire();
+			int arraylen = win->height * win->width * 4;
+			n = 0;
+			while(n < arraylen) {
+				n += read(client.fd, &((char*) win->bitmap)[n], arraylen);
+			}
+			//dm->screen->lock->release();
+			//win->lock->release();
 			break;
 	}
 }

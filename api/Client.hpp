@@ -8,6 +8,8 @@
 #include <netdb.h> 
 
 #include "Protocol.hpp"
+#include "../lib/Graphics.hpp"
+#include "../server/time.hpp"
 
 
 class Client {
@@ -55,11 +57,27 @@ class Client {
 		n = write(fd, buffer, 255);
 	}
 
-	void resizeWindow(unsigned int id, int x, int y, int w, int h) {
+	void setWindowPosition(unsigned int id, int x, int y) {
+		char buffer[256];
+		buffer[0] = (char) Request::WINDOW_REPOSITION;
+		int n = write(fd, buffer, 1);
+		snprintf(buffer, 255, "%d %d %d", id, x, y);
+		n = write(fd, buffer, 255);
+	}
+	void resizeWindow(unsigned int id, int w, int h) {
 		char buffer[256];
 		buffer[0] = (char) Request::WINDOW_RESIZE;
 		int n = write(fd, buffer, 1);
-		snprintf(buffer, 255, "%d %d %d %d %d", id, x, y, w, h);
+		snprintf(buffer, 255, "%d %d %d", id, w, h);
 		n = write(fd, buffer, 255);
+	}
+
+	void updateWindow(unsigned int id, Canvas* canvas) {
+		char buffer[256];
+		buffer[0] = (char) Request::WINDOW_UPDATE;
+		int n = write(fd, buffer, 1);
+		snprintf(buffer, 255, "%d", id);
+		n = write(fd, buffer, 255);
+		n = write(fd, canvas->bitmap, canvas->height * canvas->width * 4);
 	}
 };
