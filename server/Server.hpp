@@ -15,6 +15,7 @@
 #include <sys/stat.h>
 
 #include "../api/Protocol.hpp"
+#include "../lib/Request.hpp"
 #include "../lib/Thread.hpp"
 #include "../lib/Graphics.hpp"
 #include "../lib/MouseEvent.hpp"

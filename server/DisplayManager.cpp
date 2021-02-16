@@ -1,5 +1,5 @@
 #include "../lib/Thread.hpp"
-#include "time.hpp"
+#include "../lib/Clock.hpp"
 #include "Server.hpp"
 
 
@@ -11,7 +11,7 @@ DisplayManager::DisplayManager() {
 	layers[0]->xPos = 0;
 	layers[0]->yPos = 0;
 	layers[0]->resize(fb->width, fb->height);
-	layers[0]->flags = WindowAttributes::SHOWN;
+	layers[0]->flags = WindowFlags::SHOWN;
 	mousePointer = new LayeredCanvas(fb->width / 2, fb->height / 2, 32, 32);
 	int pointerColor = 0xff000000;
 	mousePointer->line(0, 0, 0, 12, pointerColor);
@@ -22,7 +22,7 @@ DisplayManager::DisplayManager() {
 	autoRefresh = new Thread([](void* args) -> void* {
 		DisplayManager* dm = (DisplayManager*) args;
 		int frame = 0;
-		long t = currentTime::millis();
+		long t = Clock::getMillis();
 		while(!dm->interrupted()) {
 			dm->refresh();
 			/*frame++;
@@ -83,7 +83,7 @@ void DisplayManager::refresh() {
 	fb->flush();
 	for(int z = 0; z < 64; z++) {
 		if(layers[z] != NULL) {
-			if(layers[z]->flags & WindowAttributes::SHOWN) {
+			if(layers[z]->flags & WindowFlags::SHOWN) {
 				layers[z]->lock->acquire();
 				screen->assimilate(layers[z]->xPos, layers[z]->yPos, layers[z]->width, layers[z]->height, layers[z]->bitmap);
 				layers[z]->lock->release();

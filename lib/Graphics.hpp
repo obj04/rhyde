@@ -42,6 +42,7 @@ class Canvas {
 	Lock* lock;
 
 	public:
+	Canvas();
 	Canvas(unsigned int w, unsigned int h);
 	void resize(unsigned int w, unsigned int h);
 	int getPixel(int xPos, int yPos);

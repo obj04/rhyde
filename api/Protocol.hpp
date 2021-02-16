@@ -1,4 +1,6 @@
-enum Request {
+#pragma once
+
+enum Command {
 	ACK,
 	WINDOW_CREATE,
 	WINDOW_REPOSITION,
@@ -8,7 +10,15 @@ enum Request {
 	WINDOW_DESTROY,
 };
 
-namespace WindowAttributes {
+enum WindowAttributes {
+	XPOS,
+	YPOS,
+	WIDTH,
+	HEIGHT,
+	FLAGS,
+};
+
+namespace WindowFlags {
 	const int SHOWN = 1;
 	const int FULLSCREEN = 2;
 	const int WM = 4;

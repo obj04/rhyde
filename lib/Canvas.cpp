@@ -1,6 +1,8 @@
 #include "Graphics.hpp"
 
 
+Canvas::Canvas(): Canvas(0, 0) {}
+
 Canvas::Canvas(unsigned int w, unsigned int h) {
 	lock = new Lock();
 	width = w;

@@ -35,51 +35,56 @@ void Server::background(int alpha) {
 }
 
 void Server::processRequest(unsigned int clientId) {
-	char buffer[256];
 	Socket client = clients[clientId];
-	bzero(buffer, 256);
-	int n = read(client.fd, buffer, 1);
-	if(n < 0) // error
-		return;
-	unsigned int id, attrs, w, h;
+	Request* request = new Request(client.fd);
+	/*if(request->elementsCount == 0)
+		return;*/
+	int cmd = request->getIntValue(0);
+	//printf("cmd: %d\n", cmd);
+	Request* answer = new Request();
+	unsigned int id, arraylen, attrs, w, h;
 	int x, y;
 	Window* win;
-	switch(buffer[0]) {
-		case Request::WINDOW_CREATE:
-			snprintf(buffer, 255, "%d", dm->createWindow());
-			write(client.fd, buffer, 255);
+	switch(cmd) {
+		case Command::WINDOW_CREATE:
+			id = dm->createWindow();
+			answer->addObject(id);
+			answer->send(client.fd);
+			printf("created window\n");
 			break;
-		case Request::WINDOW_REPOSITION: 
-			n = read(client.fd, buffer, 255);
-			sscanf(buffer, "%d %d %d", &id, &x, &y);
+		case Command::WINDOW_REPOSITION: 
+			printf("WINDOW_REPOSITION\n");
+			id = request->getIntValue(1);
+			x = request->getIntValue(2);
+			y = request->getIntValue(3);
 			win = dm->getWindow(id);
 			win->xPos = x;
 			win->yPos = y;
 			break;
-		case Request::WINDOW_RESIZE: 
-			n = read(client.fd, buffer, 255);
-			sscanf(buffer, "%d %d %d", &id, &w, &h);
+		case Command::WINDOW_RESIZE: 
+			printf("WINDOW_RESIZE\n");
+			id = request->getIntValue(1);
+			w = request->getIntValue(2);
+			h = request->getIntValue(3);
 			win = dm->getWindow(id);
 			win->resize(w, h);
 			break;
-		case Request::WINDOW_SET_ATTRIBUTES:
-			n = read(client.fd, buffer, 255);
-			sscanf(buffer, "%d %d", &id, &attrs);
-			dm->getWindow(id)->flags = attrs;
-			break;
-		case Request::WINDOW_UPDATE:
-			n = read(client.fd, buffer, 255);
-			sscanf(buffer, "%d", &id);
+		case Command::WINDOW_SET_ATTRIBUTES:
+			printf("WINDOW_SET_ATTRIBUTES\n");
+			id = request->getIntValue(1);
+			attrs = request->getIntValue(2);
 			win = dm->getWindow(id);
-			//dm->screen->lock->acquire();
-			//win->lock->acquire();
-			int arraylen = win->height * win->width * 4;
-			n = 0;
-			while(n < arraylen) {
-				n += read(client.fd, &((char*) win->bitmap)[n], arraylen);
-			}
-			//dm->screen->lock->release();
-			//win->lock->release();
+			win->flags = attrs;
 			break;
+		case Command::WINDOW_UPDATE:
+			printf("WINDOW_UPDATE\n");
+			id = request->getIntValue(1);
+			win = dm->getWindow(id);
+			arraylen = win->height * win->width * 4;
+			memcpy(win->bitmap, request->getObject(2).object, arraylen);
+			break;
+		default:
+			printf("unknown opcode: %d\n", cmd);
 	}
+	printf("ok\n");
 }
