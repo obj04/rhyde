@@ -12,7 +12,7 @@ DisplayManager::DisplayManager() {
 	layers[0]->yPos = 0;
 	layers[0]->resize(fb->width, fb->height);
 	layers[0]->flags = WindowFlags::SHOWN;
-	mousePointer = new LayeredCanvas(fb->width / 2, fb->height / 2, 32, 32);
+	mousePointer = new Canvas(fb->width / 2, fb->height / 2, 32, 32);
 	int pointerColor = 0xff000000;
 	mousePointer->line(0, 0, 0, 12, pointerColor);
 	mousePointer->line(0, 0, 8, 8, pointerColor);
@@ -53,7 +53,7 @@ DisplayManager::DisplayManager() {
 				dm->mousePointer->xPos += e->xDiff;
 				dm->mousePointer->yPos += e->yDiff;
 
-				LayeredCanvas* layer;
+				Canvas* layer;
 				for(int i = 1; i < 16; i++) {
 					layer = dm->layers[i];
 					if(layer != NULL) {

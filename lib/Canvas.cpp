@@ -1,13 +1,26 @@
 #include "Graphics.hpp"
 
 
-Canvas::Canvas(): Canvas(0, 0) {}
+Canvas::Canvas(): Canvas(0, 0, 0, 0) {}
 
-Canvas::Canvas(unsigned int w, unsigned int h) {
+Canvas::Canvas(unsigned int w, unsigned int h): Canvas(0, 0, w, h) {}
+
+Canvas::Canvas(int x, int y, unsigned int w, unsigned int h) {
 	lock = new Lock();
+	xPos = x;
+	yPos = y;
 	width = w;
 	height = h;
 	bitmap = new int[height * width];
+}
+
+bool Canvas::contains(int x, int y) {
+	if(    x >= this->xPos
+		&& x <= this->xPos + this->width
+		&& y >= this->yPos
+		&& y <= this->yPos + this->height)
+		return true;
+	return false;
 }
 
 void Canvas::resize(unsigned int w, unsigned int h) {
@@ -64,7 +77,7 @@ void Canvas::assimilate(int xPos, int yPos, int w, int h, int* layer) {
 			layerColor = layer[y * w + x];
 			currentColor = getPixel(pixelY, pixelX);
 			layerAlpha = layerColor >> 24 % 256;
-			currentAlpha = 255 - layerAlpha; //currentColor >> 24 % 256;
+			currentAlpha = 255 - layerAlpha;
 			if(layerAlpha == 0)
 				continue;
 			if(layerAlpha == 255) {
@@ -96,9 +109,8 @@ void Canvas::line(int x1, int y1, int x2, int y2, int color) {
 
 void Canvas::rect(int left, int top, int right, int bottom, int color) {
 	for(int y = top; y < bottom; y++)
-		for(int x = left; x < right; x++) {
+		for(int x = left; x < right; x++)
 			setPixel(y, x, color);
-		}
 }
 
 void Canvas::roundRect(int left, int top, int right, int bottom, int radius, int color) {
@@ -114,9 +126,7 @@ void Canvas::roundRect(int left, int top, int right, int bottom, int radius, int
 void Canvas::circle(int xPos, int yPos, int radius, int color) {
 	for(int y = yPos - radius; y < yPos + radius; y++) {
 		int sliceWidth = (float) radius * sqrt(1. - pow((yPos - y) / (float) radius, 2));
-		//(float) radius * cos(3.14159265 * (y - yPos) / radius) / 2;
-		for(int x = xPos - sliceWidth; x < xPos + sliceWidth; x++) {
+		for(int x = xPos - sliceWidth; x < xPos + sliceWidth; x++)
 			setPixel(y, x, color);
-		}
 	}
 }

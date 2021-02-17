@@ -1,5 +1,6 @@
 #include "Client.hpp"
 #include "ui/window/Window.hpp"
+#include "ui/button/Button.hpp"
 #include <cmath>
 
 
@@ -13,8 +14,9 @@ int main() {
 		for(int x = 0; x < window->width; x++) {
 			window->setPixel(y, x, 0xff000000 | RGB(127, (255 - (255 * x) / window->width), ((255 * y) / window->height)));
 		}
-		window->update();
 	}
+	window->add(new Button());
+	window->render();
 	window->update();
 	return 0;
 }

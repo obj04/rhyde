@@ -1,8 +1,8 @@
 #include "Button.hpp"
 
 
-Button::Button(char* label, PSFFont* font): LayeredCanvas(font->width * strlen(label) + 8, font->height + 8) {
-	this->label = label;
+Button::Button() {
+	resize(16, 16);
 	roundRect(0, 0, width, height, 4, 0xffaaaaaa);
 }
 

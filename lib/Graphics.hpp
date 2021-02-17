@@ -36,6 +36,8 @@ class PSFFont {
 
 class Canvas {
 	public:
+	int xPos;
+	int yPos;
 	unsigned int width;
 	unsigned int height;
 	int* bitmap;
@@ -44,6 +46,8 @@ class Canvas {
 	public:
 	Canvas();
 	Canvas(unsigned int w, unsigned int h);
+	Canvas(int x, int y, unsigned int w, unsigned int h);
+	bool contains(int x, int y);
 	void resize(unsigned int w, unsigned int h);
 	int getPixel(int xPos, int yPos);
 	void setPixel(int xPos, int yPos, int color);
@@ -54,14 +58,4 @@ class Canvas {
 	void rect(int left, int top, int right, int bottom, int color);
 	void roundRect(int left, int top, int right, int bottom, int radius, int color);
 	void circle(int xPos, int yPos, int radius, int color);
-};
-
-class LayeredCanvas: public Canvas {
-	public:
-	int xPos;
-	int yPos;
-
-	LayeredCanvas(unsigned int w, unsigned int h);
-	LayeredCanvas(int x, int y, unsigned int w, unsigned int h);
-	bool contains(int x, int y);
 };

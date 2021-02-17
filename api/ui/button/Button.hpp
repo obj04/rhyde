@@ -1,19 +1,17 @@
 #pragma once
 
-#include "../../../lib/Graphics.hpp"
+#include "../component/Component.hpp"
 
 
-class ButtonEvent {
-
-};
+class ButtonEvent {};
 
 class ButtonListener {};
 
-class Button: public LayeredCanvas {
+class Button: public Component {
 	public:
 	char* label;
 	void (*callback)(void* button);
 
-	Button(char* label, PSFFont* font);
+	Button();
 	void onButtonEvent(ButtonEvent* e);
 };

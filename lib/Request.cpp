@@ -84,10 +84,4 @@ void Request::send(int clientfd) {
 		}
 	}
 	write(clientfd, data, requestSize);
-	if(requestSize > 100)
-		return;
-	printf("sent: ");
-	for(pos = 0; pos < requestSize; pos++)
-		printf("%d ", (unsigned char) data[pos]);
-	printf("\n");
 }

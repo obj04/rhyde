@@ -37,10 +37,7 @@ void Server::background(int alpha) {
 void Server::processRequest(unsigned int clientId) {
 	Socket client = clients[clientId];
 	Request* request = new Request(client.fd);
-	/*if(request->elementsCount == 0)
-		return;*/
 	int cmd = request->getIntValue(0);
-	//printf("cmd: %d\n", cmd);
 	Request* answer = new Request();
 	unsigned int id, arraylen, attrs, w, h;
 	int x, y;
@@ -50,10 +47,8 @@ void Server::processRequest(unsigned int clientId) {
 			id = dm->createWindow();
 			answer->addObject(id);
 			answer->send(client.fd);
-			printf("created window\n");
 			break;
 		case Command::WINDOW_REPOSITION: 
-			printf("WINDOW_REPOSITION\n");
 			id = request->getIntValue(1);
 			x = request->getIntValue(2);
 			y = request->getIntValue(3);
@@ -62,7 +57,6 @@ void Server::processRequest(unsigned int clientId) {
 			win->yPos = y;
 			break;
 		case Command::WINDOW_RESIZE: 
-			printf("WINDOW_RESIZE\n");
 			id = request->getIntValue(1);
 			w = request->getIntValue(2);
 			h = request->getIntValue(3);
@@ -70,14 +64,12 @@ void Server::processRequest(unsigned int clientId) {
 			win->resize(w, h);
 			break;
 		case Command::WINDOW_SET_ATTRIBUTES:
-			printf("WINDOW_SET_ATTRIBUTES\n");
 			id = request->getIntValue(1);
 			attrs = request->getIntValue(2);
 			win = dm->getWindow(id);
 			win->flags = attrs;
 			break;
 		case Command::WINDOW_UPDATE:
-			printf("WINDOW_UPDATE\n");
 			id = request->getIntValue(1);
 			win = dm->getWindow(id);
 			arraylen = win->height * win->width * 4;
@@ -86,5 +78,4 @@ void Server::processRequest(unsigned int clientId) {
 		default:
 			printf("unknown opcode: %d\n", cmd);
 	}
-	printf("ok\n");
 }

@@ -21,7 +21,7 @@
 #include "../lib/MouseEvent.hpp"
 
 
-class Window: public LayeredCanvas {
+class Window: public Canvas {
 	public:
 	char* title;
 	unsigned int id;
@@ -58,7 +58,7 @@ class DisplayManager {
 	public:
 	Canvas* screen;
 	Window* layers[64];
-	LayeredCanvas* mousePointer;
+	Canvas* mousePointer;
 	Framebuffer* fb;
 
 	DisplayManager();

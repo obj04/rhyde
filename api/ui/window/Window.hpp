@@ -2,10 +2,10 @@
 
 #include "../../Client.hpp"
 #include "../../../lib/Request.hpp"
-#include "../../../lib/Graphics.hpp"
+#include "../container/Container.hpp"
 
 
-class Window: public Canvas {
+class Window: public Container {
 	Client* client;
 	unsigned int id;
 	unsigned int flags;
