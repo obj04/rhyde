@@ -18,5 +18,6 @@ int main() {
 	window->add(new Button());
 	window->render();
 	window->update();
+	delete client;
 	return 0;
 }

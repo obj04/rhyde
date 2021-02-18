@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../../Client.hpp"
+#include "../../Conversation.hpp"
 #include "../../../lib/Request.hpp"
 #include "../container/Container.hpp"
 

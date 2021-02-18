@@ -21,15 +21,17 @@ Request::Request(char* data) {
 	}
 }
 
-Request::Request(int fd) {
+Request::Request(int fd, bool blocking) {
 	elementsCount = 0;
 
-	int n = 0;
-	int requestSize;
 	char header[4];
-	do {
+	int requestSize;
+	int n = read(fd, header, 4);
+	if(n == 0 && !blocking)
+		return;
+	while(n < 4) {
 		n += read(fd, &header[n], 4 - n);
-	} while(n < 4);
+	}
 	memcpy(&requestSize, header, 4);
 	char data[requestSize];
 	while(n < requestSize) {

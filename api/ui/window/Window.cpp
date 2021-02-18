@@ -5,9 +5,10 @@ Window::Window(Client* c) {
 	client = c;
 	Request* request = new Request();
 	request->addObject(Command::WINDOW_CREATE);
-	request->send(client->fd);
-	usleep(1000000);
-	id = Request(client->fd).getIntValue(0);
+	Conversation* conv = client->send(request);
+	printf("lock acquire\n");
+	conv->lock->acquire();
+	id = conv->answer->getIntValue(0);
 	printf("received id: %d\n", id);
 }
 
@@ -17,7 +18,7 @@ void Window::setPosition(int x, int y) {
 	request->addObject(id);
 	request->addObject(x);
 	request->addObject(y);
-	request->send(client->fd);
+	client->send(request);
 }
 
 void Window::setSize(unsigned int w, unsigned int h) {
@@ -27,7 +28,7 @@ void Window::setSize(unsigned int w, unsigned int h) {
 	request->addObject(id);
 	request->addObject(w);
 	request->addObject(h);
-	request->send(client->fd);
+	client->send(request);
 }
 
 void Window::setVisible(bool visible) {
@@ -36,7 +37,7 @@ void Window::setVisible(bool visible) {
 	request->addObject(Command::WINDOW_SET_ATTRIBUTES);
 	request->addObject(id);
 	request->addObject(flags);
-	request->send(client->fd);
+	client->send(request);
 }
 
 void Window::update() {
@@ -44,5 +45,5 @@ void Window::update() {
 	request->addObject(Command::WINDOW_UPDATE);
 	request->addObject(id);
 	request->addObject(bitmap, width * height * 4);
-	request->send(client->fd);
+	client->send(request);
 }

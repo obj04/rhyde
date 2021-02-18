@@ -20,10 +20,12 @@ Server::~Server() {
 }
 
 void Server::waitForClients() {
+	printf("waiting for clients\n");
 	unsigned int clientSocketLength = sizeof(clients[0].address);
 	clients[0].fd = accept(serverSocket, (struct sockaddr*) &clients[0].address, &clientSocketLength); // clientSocket < 0 == fail
 	if(clients[0].fd < 0)
 		printf("failed connecting\n");
+	printf("client connected\n");
 }
 
 void Server::background(int alpha) {
@@ -38,15 +40,16 @@ void Server::processRequest(unsigned int clientId) {
 	Socket client = clients[clientId];
 	Request* request = new Request(client.fd);
 	int cmd = request->getIntValue(0);
+	printf("got cmd %d\n", cmd);
 	Request* answer = new Request();
 	unsigned int id, arraylen, attrs, w, h;
 	int x, y;
 	Window* win;
 	switch(cmd) {
 		case Command::WINDOW_CREATE:
+			printf("create window\n");
 			id = dm->createWindow();
 			answer->addObject(id);
-			answer->send(client.fd);
 			break;
 		case Command::WINDOW_REPOSITION: 
 			id = request->getIntValue(1);
@@ -55,6 +58,7 @@ void Server::processRequest(unsigned int clientId) {
 			win = dm->getWindow(id);
 			win->xPos = x;
 			win->yPos = y;
+			answer->addObject(Command::ACK);
 			break;
 		case Command::WINDOW_RESIZE: 
 			id = request->getIntValue(1);
@@ -62,20 +66,25 @@ void Server::processRequest(unsigned int clientId) {
 			h = request->getIntValue(3);
 			win = dm->getWindow(id);
 			win->resize(w, h);
+			answer->addObject(Command::ACK);
 			break;
 		case Command::WINDOW_SET_ATTRIBUTES:
 			id = request->getIntValue(1);
 			attrs = request->getIntValue(2);
 			win = dm->getWindow(id);
 			win->flags = attrs;
+			answer->addObject(Command::ACK);
 			break;
 		case Command::WINDOW_UPDATE:
 			id = request->getIntValue(1);
 			win = dm->getWindow(id);
 			arraylen = win->height * win->width * 4;
 			memcpy(win->bitmap, request->getObject(2).object, arraylen);
+			answer->addObject(Command::ACK);
 			break;
 		default:
 			printf("unknown opcode: %d\n", cmd);
+			answer->addObject(Command::ACK);
 	}
+	answer->send(client.fd);
 }

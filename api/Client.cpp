@@ -13,10 +13,46 @@ Client::Client(char* hostname, int p) {
 	serverAddress.sin_family = AF_INET;
 	bcopy((char*) server->h_addr, (char*) &serverAddress.sin_addr.s_addr, server->h_length);
 	serverAddress.sin_port = htons(port);
+	printf("connecting\n");
 	if(connect(fd, (struct sockaddr*) &serverAddress, sizeof(serverAddress)) < 0)
 		printf("couldn't connect to server\n");
+	printf("connected\n");
+
+	loop = new Thread([](void* args) -> void* {
+		Client* client = (Client*) args;
+		while(!(client->interrupted() && client->requestsPending->isEmpty())) {
+			if(client->requestsPending->isEmpty()) {
+				/*Request* request = new Request();
+
+				Request* answer = new Request(client->fd, false);*/
+			} else {
+				Conversation* conv = (Conversation*) client->requestsPending->pop();
+				conv->request->send(client->fd);
+				conv->answer = new Request(client->fd);
+				conv->lock->release();
+			}
+		}
+	}, (void*) this);
+	loop->start();
 }
 
 Client::~Client() {
+	interrupt();
+	loop->join();
 	close(fd);
+}
+
+Conversation* Client::send(Request* r) {
+	Conversation* conv = new Conversation(r);
+	conv->lock->acquire();
+	requestsPending->push(conv);
+	return conv;
+}
+
+void Client::interrupt() {
+	stopRequested = true;
+}
+
+bool Client::interrupted() {
+	return stopRequested;
 }

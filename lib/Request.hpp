@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../api/Protocol.hpp"
+
 
 class Request {
 	public:
@@ -11,7 +13,7 @@ class Request {
 	unsigned int elementsCount;
 
 	Request();
-	Request(int fd);
+	Request(int fd, bool blocking = true);
 	Request(char* data);
 	void addObject(void* object, unsigned int size);
 	void addObject(int object);
