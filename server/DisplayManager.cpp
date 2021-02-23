@@ -51,8 +51,8 @@ DisplayManager::DisplayManager() {
 					dm->mousePointer->xPos, dm->mousePointer->yPos,
 					data[1], data[2], 
 					data[0] & 0x01, data[0] & 0x04, data[0] & 0x02);
-				dm->mousePointer->xPos += e->xDiff;
-				dm->mousePointer->yPos += e->yDiff;
+				dm->mousePointer->xPos += dm->getAcceleratedMouseMovementDistance(e->xDiff);
+				dm->mousePointer->yPos += dm->getAcceleratedMouseMovementDistance(e->yDiff);
 
 				Canvas* layer;
 				for(int i = 1; i < 16; i++) {
@@ -102,6 +102,12 @@ void DisplayManager::interrupt() {
 
 bool DisplayManager::interrupted() {
 	return stopRequested;
+}
+
+int DisplayManager::getAcceleratedMouseMovementDistance(int input) {
+	int sign = input / abs(input);
+	int val = abs(input);
+	return sign * val * ((val / 4) + 1);
 }
 
 unsigned int DisplayManager::createWindow() {

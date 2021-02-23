@@ -20,7 +20,6 @@ int main() {
 	btn->setCallback([](Button* button, void* args) -> void {
 		int x = rand() % 1920;
 		int y = rand() % 1080;
-		printf("%d %d\n", x, y);
 		((Window*) args)->setPosition(x, y);
 	});
 	btn->setCallbackArguments(window);

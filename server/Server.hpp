@@ -68,6 +68,7 @@ class DisplayManager {
 	void refresh();
 	void interrupt();
 	bool interrupted();
+	int getAcceleratedMouseMovementDistance(int input);
 	unsigned int createWindow();
 	Window* getWindow(unsigned int id);
 	void destroyWindow(unsigned int id);

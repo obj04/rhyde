@@ -27,7 +27,7 @@ PSFFont* loadFont(int width, int height) {
 
 int main(int argc, char *argv[]) {
 	Server* server = new Server(38642);
-	//popen("./api.out", "r");
+	popen("./api.out", "r");
 	server->waitForClients();
 	while(true) {//!escape()) {
 		server->processRequest(0);
