@@ -3,15 +3,13 @@
 #include "../component/Component.hpp"
 
 
-class ButtonEvent {};
-
-class ButtonListener {};
-
 class Button: public Component {
 	public:
 	char* label;
-	void (*callback)(void* button);
+	void (*callback)(Button*, void*);
+	void* callbackArgs;
 
 	Button();
-	void onButtonEvent(ButtonEvent* e);
+	void setCallback(void (*function)(Button*, void*));
+	void setCallbackArguments(void* args);
 };

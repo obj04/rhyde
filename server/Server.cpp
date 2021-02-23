@@ -40,12 +40,19 @@ void Server::processRequest(unsigned int clientId) {
 	Socket client = clients[clientId];
 	Request* request = new Request(client.fd);
 	int cmd = request->getIntValue(0);
-	printf("got cmd %d\n", cmd);
+	if(cmd != Command::POLL_EVENT)
+		printf("got cmd %d\n", cmd);
 	Request* answer = new Request();
 	unsigned int id, arraylen, attrs, w, h;
 	int x, y;
 	Window* win;
 	switch(cmd) {
+		case Command::POLL_EVENT:
+			if(!dm->eventQueue->isEmpty()) {
+				ServerEvent* e = (ServerEvent*) dm->eventQueue->pop();
+				e->addTo(answer);
+			}
+			break;
 		case Command::WINDOW_CREATE:
 			printf("create window\n");
 			id = dm->createWindow();

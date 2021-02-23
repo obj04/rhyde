@@ -4,6 +4,7 @@
 
 
 DisplayManager::DisplayManager() {
+	eventQueue = new Queue();
 	fb = new Framebuffer();
 	screen = new Canvas(fb->width, fb->height);
 	screen->bitmap = fb->bitmap;
@@ -61,7 +62,7 @@ DisplayManager::DisplayManager() {
 							&& e->xPos <= layer->xPos + layer->width
 							&& e->yPos >= layer->yPos
 							&& e->yPos <= layer->yPos + layer->height) {
-							printf("layer %d touched\n", i);
+							dm->eventQueue->push(new ServerEvent(e, i));
 						}
 					}
 				}

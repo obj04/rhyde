@@ -9,13 +9,15 @@ MouseEvent::MouseEvent(int x, int y, signed char dx, signed char dy, unsigned ch
 	left = l;
 	middle = m;
 	right = r;
-	if(left == 1) {
-		if(xDiff == 0 && yDiff == 0)
+	type = Type::NOTHING;
+	if(xDiff == 0 && yDiff == 0) {
+		if(left == 1) {
 			type = Type::MOUSEDOWN;
-		if(xDiff != 0 || yDiff != 0) {
-			type = Type::MOUSEDRAG;
 		}
 	} else {
-		type = Type::MOUSEMOVE;
+		if(left == 1)
+			type = Type::MOUSEDRAG;
+		else
+			type = Type::MOUSEMOVE;
 	}
 }

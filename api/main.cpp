@@ -1,12 +1,13 @@
-#include "Client.hpp"
+#include "API.hpp"
 #include "ui/window/Window.hpp"
 #include "ui/button/Button.hpp"
 #include <cmath>
 
 
 int main() {
-	Client* client = new Client("localhost", 38642);
-	Window* window = new Window(client);
+	API* api = new API();
+	api->connect("localhost", 38642);
+	Window* window = new Window(api);
 	window->setPosition(100, 100);
 	window->setSize(640, 480);
 	window->setVisible(true);
@@ -15,9 +16,19 @@ int main() {
 			window->setPixel(y, x, 0xff000000 | RGB(127, (255 - (255 * x) / window->width), ((255 * y) / window->height)));
 		}
 	}
-	window->add(new Button());
+	Button* btn = new Button();
+	btn->setCallback([](Button* button, void* args) -> void {
+		int x = rand() % 1920;
+		int y = rand() % 1080;
+		printf("%d %d\n", x, y);
+		((Window*) args)->setPosition(x, y);
+	});
+	btn->setCallbackArguments(window);
+	window->add(btn);
 	window->render();
 	window->update();
-	delete client;
+	while(true) {
+		sleep(1);
+	}
 	return 0;
 }

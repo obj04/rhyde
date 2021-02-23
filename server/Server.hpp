@@ -17,8 +17,9 @@
 #include "../api/Protocol.hpp"
 #include "../lib/Request.hpp"
 #include "../lib/Thread.hpp"
+#include "../lib/Queue.hpp"
 #include "../lib/Graphics.hpp"
-#include "../lib/MouseEvent.hpp"
+#include "../lib/ServerEvent.hpp"
 
 
 class Window: public Canvas {
@@ -60,6 +61,7 @@ class DisplayManager {
 	Window* layers[64];
 	Canvas* mousePointer;
 	Framebuffer* fb;
+	Queue* eventQueue;
 
 	DisplayManager();
 	~DisplayManager();

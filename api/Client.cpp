@@ -1,7 +1,9 @@
 #include "Client.hpp"
 
 
-Client::Client(char* hostname, int p) {
+Client::Client(void (*evtCallback)(void*, ServerEvent*), void* owner, char* hostname, int p) {
+	callbackOwner = owner;
+	eventCallback = evtCallback;
 	port = p;
 	fd = socket(AF_INET, SOCK_STREAM, 0); // fd < 0 = fail
 	if(fd < 0)
@@ -22,9 +24,15 @@ Client::Client(char* hostname, int p) {
 		Client* client = (Client*) args;
 		while(!(client->interrupted() && client->requestsPending->isEmpty())) {
 			if(client->requestsPending->isEmpty()) {
-				/*Request* request = new Request();
-
-				Request* answer = new Request(client->fd, false);*/
+				Request* request = new Request();
+				request->addObject(Command::POLL_EVENT);
+				request->send(client->fd);
+				Request* answer = new Request(client->fd);
+				if(answer->elementsCount > 0) {
+					//ServerEvent* e = (ServerEvent*) answer->getObject(0).object;
+					client->eventCallback(client->callbackOwner, new ServerEvent(answer));
+				}
+				usleep(10000);
 			} else {
 				Conversation* conv = (Conversation*) client->requestsPending->pop();
 				conv->request->send(client->fd);
@@ -40,13 +48,6 @@ Client::~Client() {
 	interrupt();
 	loop->join();
 	close(fd);
-}
-
-Conversation* Client::send(Request* r) {
-	Conversation* conv = new Conversation(r);
-	conv->lock->acquire();
-	requestsPending->push(conv);
-	return conv;
 }
 
 void Client::interrupt() {

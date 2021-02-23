@@ -11,6 +11,21 @@ Container::Container() {
 			}
 		}
 	};
+
+	eventHandler = [](Component* comp, ServerEvent* e) -> void {
+		Container* cont = (Container*) comp;
+		for(int i = 0; i < 64; i++) {
+			Component* component = cont->components[i];
+			if(component != NULL) {
+				if(component->contains(e->mouse->xPos, e->mouse->yPos)) {
+					e->mouse->xPos -= component->xPos;
+					e->mouse->yPos -= component->yPos;
+					component->handleEvent(e);
+				}
+			}
+		}
+	};
+
 }
 
 void Container::add(Component* comp, void* l) {
