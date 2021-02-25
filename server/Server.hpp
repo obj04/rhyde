@@ -18,7 +18,7 @@
 #include "../lib/Request.hpp"
 #include "../lib/Thread.hpp"
 #include "../lib/Queue.hpp"
-#include "../lib/Graphics.hpp"
+#include "../lib/Canvas.hpp"
 #include "../lib/ServerEvent.hpp"
 
 

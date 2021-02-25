@@ -2,7 +2,7 @@
 
 
 class Lock {
-	int count;
+	void* mtx;
 
 	public:
 	Lock();

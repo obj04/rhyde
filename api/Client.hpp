@@ -11,7 +11,7 @@
 
 #include "Protocol.hpp"
 #include "Conversation.hpp"
-#include "../lib/Graphics.hpp"
+#include "../lib/Canvas.hpp"
 #include "../lib/Thread.hpp"
 #include "../lib/Queue.hpp"
 #include "../lib/Request.hpp"

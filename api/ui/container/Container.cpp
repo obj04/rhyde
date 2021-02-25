@@ -1,7 +1,8 @@
 #include "Container.hpp"
 
 
-Container::Container() {
+Container::Container(API* ptr): Component(ptr) {
+	api = ptr;
 	renderer = [](Component* comp) -> void {
 		Container* cont = (Container*) comp;
 		for(int i = 0; i < 64; i++) {

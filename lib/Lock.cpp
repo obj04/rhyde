@@ -1,15 +1,15 @@
 #include "Lock.hpp"
+#include <mutex>
 
 
 Lock::Lock() {
-	count = 0;
+	mtx = new std::mutex();
 }
 
 void Lock::acquire() {
-	count++;
-	while(count > 1);
+	((std::mutex*) mtx)->lock();
 }
 
 void Lock::release() {
-	count--;
+	((std::mutex*) mtx)->unlock();
 }

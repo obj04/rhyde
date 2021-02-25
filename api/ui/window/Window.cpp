@@ -1,15 +1,15 @@
 #include "Window.hpp"
 
 
-Window::Window(API* a): Container() {
-	api = a;
+Window::Window(API* ptr): Container(ptr) {
+	api = ptr;
 	Request* request = new Request();
 	request->addObject(Command::WINDOW_CREATE);
 	Conversation* conv = api->send(request);
 	conv->lock->acquire();
 	id = conv->answer->getIntValue(0);
 	printf("received id: %d\n", id);
-	api->registerComponent(this);
+	api->components->add(this);
 }
 
 void Window::setPosition(int x, int y) {

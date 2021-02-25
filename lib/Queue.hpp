@@ -2,6 +2,7 @@
 
 #include <queue>
 using namespace std;
+#include "Lock.hpp"
 
 
 class Queue {

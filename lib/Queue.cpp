@@ -1,7 +1,8 @@
 #include "Queue.hpp"
+#include <cstdio>
 
 
- void Queue::push(void* item) {
+void Queue::push(void* item) {
 	q.push(item);
 }
 
@@ -12,5 +13,6 @@ void* Queue::pop() {
 }
 
 bool Queue::isEmpty() {
-	return q.empty();
+	bool result = q.empty();
+	return result;
 }

@@ -1,6 +1,22 @@
 #include "API.hpp"
+#include "ui/component/Component.hpp"
+#include <sys/stat.h>
 
 
+PSFFont* loadFont(int width, int height) {
+	char fontFile[16];
+	snprintf(fontFile, 16, "%dx%d.psfu", width, height);
+	struct stat fileStats;
+	
+	stat(fontFile, &fileStats);
+	int fileSize = fileStats.st_size;
+	unsigned char* psfData = new unsigned char[fileSize];
+	FILE* psf = fopen(fontFile, "r");
+	fread(psfData, fileSize, fileSize, psf);
+	fclose(psf);
+	return new PSFFont(psfData);
+}
+//-----------------------------
 API::API() {
 	eventListener = [](void* ptr, ServerEvent* e) -> void {
 		API* api = (API*) ptr;
@@ -15,6 +31,7 @@ API::API() {
 			}
 		}
 	};
+	defaultFont = loadFont(8, 16);
 }
 
 API::~API() {
@@ -30,12 +47,4 @@ Conversation* API::send(Request* r) {
 	conv->lock->acquire();
 	client->requestsPending->push(conv);
 	return conv;
-}
-
-void API::registerComponent(Component* c) {
-	components->add(c);
-}
-
-void API::unregisterComponent(Component* c) {
-	components->remove(c);
 }

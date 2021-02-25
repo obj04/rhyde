@@ -12,7 +12,7 @@ class Window: public Container {
 	unsigned int flags;
 
 	public:
-	Window(API* c);
+	Window(API* ptr);
 	void setPosition(int x, int y);
 	void setSize(unsigned int w, unsigned int h);
 	void setVisible(bool visible);

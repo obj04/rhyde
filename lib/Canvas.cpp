@@ -1,4 +1,4 @@
-#include "Graphics.hpp"
+#include "Canvas.hpp"
 
 
 Canvas::Canvas(): Canvas(0, 0, 0, 0) {}
@@ -12,6 +12,13 @@ Canvas::Canvas(int x, int y, unsigned int w, unsigned int h) {
 	width = w;
 	height = h;
 	bitmap = new int[height * width];
+}
+
+void Canvas::setPosition(int x, int y) {
+	lock->acquire();
+	xPos = x;
+	yPos = y;
+	lock->release();
 }
 
 bool Canvas::contains(int x, int y) {
@@ -47,24 +54,6 @@ void Canvas::setPixel(int yPos, int xPos, int color) {
 	bitmap[pos] = color;
 }
 
-void Canvas::fill(int color) {
-	rect(0, 0, width, height, color);
-}
-
-void Canvas::text(int xPos, int yPos, PSFFont* font, const char* str, int fg, int bg) {
-	bool** glyph;
-	for(int i = 0; i < strlen(str); i++) {
-		glyph = font->getGlyph(str[i]);
-		for(int y = 0; y < font->height; y++)
-			for(int x = 0; x < font->width; x++) {
-				if(glyph[y][x])
-					setPixel(yPos + y, xPos + i * font->width + x, fg);
-				else
-					setPixel(yPos + y, xPos + i * font->width + x, bg);
-			}
-	}
-}
-
 void Canvas::assimilate(int xPos, int yPos, int w, int h, int* layer) {
 	int pixelY, pixelX;
 	unsigned int currentColor, layerColor;
@@ -89,6 +78,28 @@ void Canvas::assimilate(int xPos, int yPos, int w, int h, int* layer) {
 			b = ((currentColor % 256) * currentAlpha + (layerColor % 256) * layerAlpha) / (layerAlpha + currentAlpha);
 			setPixel(pixelY, pixelX, layerAlpha << 24 | RGB(r, g, b));
 		}
+	}
+}
+
+void Canvas::assimilate(Canvas* canvas) {
+	assimilate(canvas->xPos, canvas->yPos, canvas->width, canvas->height, canvas->bitmap);
+}
+
+void Canvas::fill(int color) {
+	rect(0, 0, width, height, color);
+}
+
+void Canvas::text(int xPos, int yPos, PSFFont* font, const char* str, int fg, int bg) {
+	bool** glyph;
+	for(int i = 0; i < strlen(str); i++) {
+		glyph = font->getGlyph(str[i]);
+		for(int y = 0; y < font->height; y++)
+			for(int x = 0; x < font->width; x++) {
+				if(glyph[y][x])
+					setPixel(yPos + y, xPos + i * font->width + x, fg);
+				else
+					setPixel(yPos + y, xPos + i * font->width + x, bg);
+			}
 	}
 }
 

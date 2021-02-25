@@ -16,13 +16,16 @@ int main() {
 			window->setPixel(y, x, 0xff000000 | RGB(127, (255 - (255 * x) / window->width), ((255 * y) / window->height)));
 		}
 	}
-	Button* btn = new Button();
+	Button* btn = new Button(api, "move window");
+	btn->setPosition(100, 100);
 	btn->setCallback([](Button* button, void* args) -> void {
 		int x = rand() % 1920;
 		int y = rand() % 1080;
 		((Window*) args)->setPosition(x, y);
 	});
 	btn->setCallbackArguments(window);
+	btn->pack();
+	btn->render();
 	window->add(btn);
 	window->render();
 	window->update();
