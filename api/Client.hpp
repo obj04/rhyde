@@ -26,12 +26,12 @@ class Client {
 	struct sockaddr_in serverAddress;
 	struct hostent* server;
 	void* callbackOwner;
-	void (*eventCallback)(void*, ServerEvent*);
+	void (*eventCallback)(void*, ServerEvent);
 	Thread* loop;
 	bool stopRequested = false;
 	Queue* requestsPending = new Queue();
 
-	Client(void (*evtCallback)(void*, ServerEvent*), void* owner, char* hostname, int p);
+	Client(void (*evtCallback)(void*, ServerEvent), void* owner, char* hostname, int p);
 	~Client();
 	Conversation* send(Request* r);
 	void interrupt();

@@ -2,16 +2,33 @@
 
 #include <cstring>
 #include "Request.hpp"
-#include "MouseEvent.hpp"
 
 
 class ServerEvent {
 	public:
-	char* data;
-	MouseEvent* mouse;
-	int targetWindow;
+	enum {
+		MOUSE,
+		KEYBOARD,
+	} source;
+	struct {
+		unsigned short scancode;
+		enum {
+			KEYDOWN,
+			KEYUP,
+			AUTOREPEAT,
+		} type;
+	} keyboard;
+	struct {
+		int xPos, yPos;
+		signed char xDiff, yDiff;
+		unsigned char left, middle, right = 0;
+		enum {
+			CLICK,
+			DRAG,
+			MOVE,
+		} type;
+	} mouse;
 
-	ServerEvent(MouseEvent* e, int windowId);
-	ServerEvent(Request* r);
-	void addTo(Request* r);
+	void readMouseData(char* data);
+	void readKeyboardData(char* data);
 };

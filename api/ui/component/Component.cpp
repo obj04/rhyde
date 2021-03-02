@@ -15,7 +15,7 @@ void Component::pack() {
 		packer(this);
 }
 
-void Component::handleEvent(ServerEvent* e) {
+void Component::handleEvent(ServerEvent e) {
 	if(eventHandler != NULL)
 		eventHandler(this, e);
 }

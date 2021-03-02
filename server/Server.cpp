@@ -50,7 +50,7 @@ void Server::processRequest(unsigned int clientId) {
 		case Command::POLL_EVENT:
 			if(!dm->eventQueue->isEmpty()) {
 				ServerEvent* e = (ServerEvent*) dm->eventQueue->pop();
-				e->addTo(answer);
+				answer->addObject(e, sizeof(ServerEvent));
 			}
 			break;
 		case Command::WINDOW_CREATE:

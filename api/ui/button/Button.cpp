@@ -19,8 +19,8 @@ Button::Button(API* ptr): Component(ptr) {
 		button->resize(button->label->width + 8, button->label->height + 8);
 	};
 	
-	eventHandler = [](Component* comp, ServerEvent* e) -> void {
-		if(e->mouse->type != MouseEvent::Type::MOUSEDOWN)
+	eventHandler = [](Component* comp, ServerEvent e) -> void {
+		if(e.mouse.type != e.mouse.CLICK)
 			return;
 
 		Button* button = (Button*) comp;

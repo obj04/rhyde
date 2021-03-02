@@ -10,7 +10,7 @@ class API {
 	public:
 	Client* client;
 	List* components = new List();
-	void (*eventListener)(void* v, ServerEvent* e);
+	void (*eventListener)(void* v, ServerEvent e);
 	PSFFont* defaultFont;
 
 	API();

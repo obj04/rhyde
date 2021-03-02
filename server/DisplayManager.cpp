@@ -38,31 +38,46 @@ DisplayManager::DisplayManager() {
 	}, (void*) this);
 	autoRefresh->start();
 
+	keyboardListener = new Thread([](void* args) -> void* {
+		DisplayManager* dm = (DisplayManager*) args;
+		int keyboard = open("/dev/input/event3", O_RDWR);
+		char data[24];
+
+		while(!dm->interrupted()) {
+			if(read(keyboard, data, sizeof(data)) > 0) {
+				ServerEvent e;
+				e.mouse.xPos = dm->mousePointer->xPos;
+				e.mouse.yPos = dm->mousePointer->yPos;
+				e.readKeyboardData(data);
+				dm->eventQueue->push(&e);
+			}
+			usleep(10000);
+		}
+		close(keyboard);
+		return NULL;
+	}, (void*) this);
+	keyboardListener->start();
+
 	mouseListener = new Thread([](void* args) -> void* {
 		DisplayManager* dm = (DisplayManager*) args;
 		int mouse = open("/dev/input/mice", O_RDWR);
-		unsigned char data[3];
-		int left, middle, right;
-		signed char x, y;
-
+		char data[3];
+		
 		while(!dm->interrupted()) {
 			if(read(mouse, data, sizeof(data)) > 0) {
-				MouseEvent* e = new MouseEvent(
-					dm->mousePointer->xPos, dm->mousePointer->yPos,
-					data[1], data[2], 
-					data[0] & 0x01, data[0] & 0x04, data[0] & 0x02);
-				dm->mousePointer->xPos += dm->getAcceleratedMouseMovementDistance(e->xDiff);
-				dm->mousePointer->yPos += dm->getAcceleratedMouseMovementDistance(e->yDiff);
+				ServerEvent e;
+				e.mouse.xPos = dm->mousePointer->xPos;
+				e.mouse.yPos = dm->mousePointer->yPos;
+				e.readMouseData(data);
+				dm->mousePointer->xPos += dm->getAcceleratedMouseMovementDistance(e.mouse.xDiff);
+				dm->mousePointer->yPos += dm->getAcceleratedMouseMovementDistance(e.mouse.yDiff);
 
 				Canvas* layer;
 				for(int i = 1; i < 16; i++) {
 					layer = dm->layers[i];
 					if(layer != NULL) {
-						if(    e->xPos >= layer->xPos
-							&& e->xPos <= layer->xPos + layer->width
-							&& e->yPos >= layer->yPos
-							&& e->yPos <= layer->yPos + layer->height) {
-							dm->eventQueue->push(new ServerEvent(e, i));
+						if(layer->contains(e.mouse.xPos, e.mouse.yPos)) {
+							dm->eventQueue->push(&e);
 						}
 					}
 				}

@@ -1,7 +1,7 @@
 #include "Client.hpp"
 
 
-Client::Client(void (*evtCallback)(void*, ServerEvent*), void* owner, char* hostname, int p) {
+Client::Client(void (*evtCallback)(void*, ServerEvent), void* owner, char* hostname, int p) {
 	callbackOwner = owner;
 	eventCallback = evtCallback;
 	port = p;
@@ -29,8 +29,8 @@ Client::Client(void (*evtCallback)(void*, ServerEvent*), void* owner, char* host
 				request->send(client->fd);
 				Request* answer = new Request(client->fd);
 				if(answer->elementsCount > 0) {
-					//ServerEvent* e = (ServerEvent*) answer->getObject(0).object;
-					client->eventCallback(client->callbackOwner, new ServerEvent(answer));
+					ServerEvent* e = (ServerEvent*) answer->getObject(0).object;
+					client->eventCallback(client->callbackOwner, *e);
 				}
 				usleep(10000);
 			} else {

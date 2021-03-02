@@ -10,11 +10,11 @@ class Component: public Canvas {
 	API* api;
 	void (*renderer)(Component*);
 	void (*packer)(Component*);
-	void (*eventHandler)(Component*, ServerEvent*);
+	void (*eventHandler)(Component*, ServerEvent);
 	
 	public:
 	Component(API* ptr);
 	void render();
 	void pack();
-	void handleEvent(ServerEvent* e);
+	void handleEvent(ServerEvent e);
 };

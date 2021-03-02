@@ -25,7 +25,7 @@ int main() {
 	});
 	btn->setCallbackArguments(window);
 	btn->pack();
-	btn->render();
+	//btn->render();
 	window->add(btn);
 	window->render();
 	window->update();

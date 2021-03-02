@@ -53,6 +53,7 @@ class Framebuffer {
 
 class DisplayManager {
 	Thread* autoRefresh;
+	Thread* keyboardListener;
 	Thread* mouseListener;
 	bool stopRequested = false;
 

@@ -18,14 +18,14 @@ PSFFont* loadFont(int width, int height) {
 }
 //-----------------------------
 API::API() {
-	eventListener = [](void* ptr, ServerEvent* e) -> void {
+	eventListener = [](void* ptr, ServerEvent e) -> void {
 		API* api = (API*) ptr;
 		for(void* c : api->components->items) {
 			Component* comp = (Component*) c;
 			if(comp != NULL) {
-				if(comp->contains(e->mouse->xPos, e->mouse->yPos)) {
-					e->mouse->xPos -= comp->xPos;
-					e->mouse->yPos -= comp->yPos;
+				if(comp->contains(e.mouse.xPos, e.mouse.yPos)) {
+					e.mouse.xPos -= comp->xPos;
+					e.mouse.yPos -= comp->yPos;
 					comp->handleEvent(e);
 				}
 			}
