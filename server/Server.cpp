@@ -40,8 +40,8 @@ void Server::processRequest(unsigned int clientId) {
 	Socket client = clients[clientId];
 	Request* request = new Request(client.fd);
 	int cmd = request->getIntValue(0);
-	if(cmd != Command::POLL_EVENT)
-		printf("got cmd %d\n", cmd);
+	//if(cmd != Command::POLL_EVENT)
+	//	printf("got cmd %d\n", cmd);
 	Request* answer = new Request();
 	unsigned int id, arraylen, attrs, w, h;
 	int x, y;
@@ -82,11 +82,15 @@ void Server::processRequest(unsigned int clientId) {
 			win->flags = attrs;
 			answer->addObject(Command::ACK);
 			break;
-		case Command::WINDOW_UPDATE:
+		case Command::CLIENT_AREA_UPDATE:
 			id = request->getIntValue(1);
+			x = request->getIntValue(2);
+			y = request->getIntValue(3);
+			w = request->getIntValue(4);
+			h = request->getIntValue(5);
 			win = dm->getWindow(id);
-			arraylen = win->height * win->width * 4;
-			memcpy(win->bitmap, request->getObject(2).object, arraylen);
+			arraylen = w * h * 4;
+			win->assimilate(x, y, w, h, (int*) request->getObject(6).object);
 			answer->addObject(Command::ACK);
 			break;
 		default:

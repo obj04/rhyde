@@ -9,7 +9,12 @@ Button::Button(API* ptr): Component(ptr) {
 	renderer = [](Component* comp) -> void {
 		Button* button = (Button*) comp;
 		button->fill(0);
-		button->roundRect(0, 0, button->width, button->height, 4, 0xffffffff);
+		if(button->hovered) {
+			button->roundRect(0, 0, button->width, button->height, 4, 0xff000000);
+			button->roundRect(2, 2, button->width - 2, button->height - 2, 4, 0xffffffff);
+		} else {
+			button->roundRect(0, 0, button->width, button->height, 4, 0xffffffff);
+		}
 		button->centerLabel();
 		button->assimilate(button->label);
 	};

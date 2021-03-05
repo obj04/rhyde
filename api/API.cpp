@@ -1,5 +1,5 @@
 #include "API.hpp"
-#include "ui/component/Component.hpp"
+#include "ui/Component.hpp"
 #include <sys/stat.h>
 
 
@@ -16,7 +16,9 @@ PSFFont* loadFont(int width, int height) {
 	fclose(psf);
 	return new PSFFont(psfData);
 }
+//
 //-----------------------------
+//
 API::API() {
 	eventListener = [](void* ptr, ServerEvent e) -> void {
 		API* api = (API*) ptr;
@@ -47,4 +49,30 @@ Conversation* API::send(Request* r) {
 	conv->lock->acquire();
 	client->requestsPending->push(conv);
 	return conv;
+}
+
+void API::updateClientArea(void* ptr) {
+	Component* comp = (Component*) ptr;
+	Component* window;
+	for(void* c : components->items) {
+		window = (Component*) c;
+		if(window->id == comp->id) {
+			window->render();
+			break;
+		}
+	}
+	Point pos = comp->getAbsolutePosition();
+	pos.move(- comp->xPos, - comp->yPos);
+	Canvas area = Canvas(comp->width, comp->height);
+	area.assimilate(pos.x, pos.y, area.width, area.height, window->bitmap);
+
+	Request* request = new Request();
+	request->addObject(Command::CLIENT_AREA_UPDATE);
+	request->addObject(comp->id);
+	request->addObject(pos.x);
+	request->addObject(pos.y);
+	request->addObject(area.width);
+	request->addObject(area.height);
+	request->addObject(area.bitmap, area.width * area.height * 4);
+	send(request);
 }

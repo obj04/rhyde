@@ -43,9 +43,5 @@ void Window::setVisible(bool visible) {
 }
 
 void Window::update() {
-	Request* request = new Request();
-	request->addObject(Command::WINDOW_UPDATE);
-	request->addObject(id);
-	request->addObject(bitmap, width * height * 4);
-	api->send(request);
+	api->updateClientArea(this);
 }

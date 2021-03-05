@@ -17,4 +17,5 @@ class API {
 	~API();
 	void connect(char* host, int port);
 	Conversation* send(Request* r);
+	void updateClientArea(void* ptr);
 };

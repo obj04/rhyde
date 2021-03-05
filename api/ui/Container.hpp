@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../component/Component.hpp"
+#include "Component.hpp"
 
 
 class Container: public Component {

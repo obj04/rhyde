@@ -31,6 +31,8 @@ Container::Container(API* ptr): Component(ptr) {
 }
 
 void Container::add(Component* comp, void* l) {
+	comp->id = id;
+	comp->parent = this;
 	for(int i = 0; i < 64; i++) {
 		if(components[i] == NULL) {
 			components[i] = comp;
@@ -43,7 +45,8 @@ void Container::remove(Component* comp) {
 	lock->acquire();
 	for(int i = 0; i < 64; i++) {
 		if(components[i] == comp) {
-			delete components[i];
+			components[i]->id = 0;
+			components[i]->parent = NULL;
 			components[i] = NULL;
 		}
 	}

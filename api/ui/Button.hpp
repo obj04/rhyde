@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../component/Component.hpp"
-#include "../label/Label.hpp"
+#include "Component.hpp"
+#include "Label.hpp"
 
 
 class Button: public Component {

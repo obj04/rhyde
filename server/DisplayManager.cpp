@@ -69,8 +69,10 @@ DisplayManager::DisplayManager() {
 				e.mouse.xPos = dm->mousePointer->xPos;
 				e.mouse.yPos = dm->mousePointer->yPos;
 				e.readMouseData(data);
-				dm->mousePointer->xPos += dm->getAcceleratedMouseMovementDistance(e.mouse.xDiff);
-				dm->mousePointer->yPos += dm->getAcceleratedMouseMovementDistance(e.mouse.yDiff);
+				e.mouse.xDiff = dm->getAcceleratedMouseMovementDistance(e.mouse.xDiff);
+				e.mouse.yDiff = dm->getAcceleratedMouseMovementDistance(e.mouse.yDiff);
+				dm->mousePointer->xPos += e.mouse.xDiff;
+				dm->mousePointer->yPos += e.mouse.yDiff;
 
 				Canvas* layer;
 				for(int i = 1; i < 16; i++) {

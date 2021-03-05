@@ -1,6 +1,6 @@
 #include "API.hpp"
-#include "ui/window/Window.hpp"
-#include "ui/button/Button.hpp"
+#include "ui/Window.hpp"
+#include "ui/Button.hpp"
 #include <cmath>
 
 
@@ -25,7 +25,6 @@ int main() {
 	});
 	btn->setCallbackArguments(window);
 	btn->pack();
-	//btn->render();
 	window->add(btn);
 	window->render();
 	window->update();

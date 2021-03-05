@@ -1,14 +1,13 @@
 #pragma once
 
-#include "../../API.hpp"
-#include "../../Conversation.hpp"
-#include "../../../lib/Request.hpp"
-#include "../container/Container.hpp"
+#include "../API.hpp"
+#include "../Conversation.hpp"
+#include "../../lib/Request.hpp"
+#include "Container.hpp"
 
 
 class Window: public Container {
 	API* api;
-	unsigned int id;
 	unsigned int flags;
 
 	public:
